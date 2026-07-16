@@ -1,0 +1,16 @@
+# Переводы строк — свойство репозитория, а не глобального конфига машины.
+# Без этого файла поведение зависит от core.autocrlf у каждого разработчика
+# (у нас сейчас true из C:/Program Files/Git/etc/gitconfig), и рабочая копия
+# gradlew после clone→checkout на Windows получает CRLF.
+
+# POSIX-скрипт: строго LF в рабочей копии на любой ОС.
+# Иначе шебанг становится "#!/bin/sh\r" → bad interpreter в Linux-контейнере
+# при COPY gradlew из рабочего каталога.
+/gradlew        text eol=lf
+
+# cmd-скрипт: строго CRLF.
+/gradlew.bat    text eol=crlf
+
+# gradle-wrapper.jar — единственный jar в репозитории (остальные лежат в build/,
+# который игнорируется). Никаких подстановок eol.
+*.jar           binary
