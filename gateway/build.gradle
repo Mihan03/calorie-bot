@@ -8,7 +8,8 @@ dependencies {
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-
+    implementation 'org.telegram:telegrambots-springboot-longpolling-starter:10.0.0'
+    implementation 'org.telegram:telegrambots-client:10.0.0'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

@@ -1,3 +1,6 @@
 spring:
   application:
     name: gateway 
+telegram:
+  bot:
+    token: ${TELEGRAM_BOT_TOKEN}
