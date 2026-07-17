@@ -1,0 +1,3 @@
+rootProject.name = 'calorie-bot'
+
+include 'gateway'
