@@ -4,3 +4,6 @@ spring:
 telegram:
   bot:
     token: ${TELEGRAM_BOT_TOKEN}
+logging:
+  pattern:
+    level: "%5p [correlationId=%X{correlationId}]"
