@@ -1,0 +1,16 @@
+volumes:
+  pg_volume:
+
+services:
+  postgres:
+    container_name: calorie-bot-postgres
+    image: postgres:18-alpine3.24
+    ports:
+      - "5433:5432"
+    restart: "no"
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=12345
+      - POSTGRES_DB=user_db
+    volumes:
+      - pg_volume:/var/lib/postgresql
