@@ -1,0 +1,3 @@
+### Найти пользователя по Telegram ID
+GET {{userServiceUrl}}/users/123456789
+X-Correlation-ID: test-request-1
