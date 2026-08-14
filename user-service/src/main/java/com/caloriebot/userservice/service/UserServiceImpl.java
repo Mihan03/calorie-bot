@@ -1,7 +1,7 @@
 package com.caloriebot.userservice.service;
 
-import com.caloriebot.userservice.dto.UserDto;
-import com.caloriebot.userservice.exception.NotFoundExcepton;
+import com.caloriebot.userservice.dto.*;
+import com.caloriebot.userservice.exception.NotFoundException;
 import com.caloriebot.userservice.mapper.UserMapper;
 import com.caloriebot.userservice.model.User;
 import com.caloriebot.userservice.repository.UserRepository;
@@ -13,14 +13,15 @@ import org.springframework.stereotype.Service;
 @Getter
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private UserRepository userRepository;
-    private UserMapper userMapper;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
-    public UserDto getUserByTgId(Long tgId) {
-        User user = userRepository.findByTgId(tgId).orElseThrow(() -> new NotFoundExcepton(
-                "User not found"
+    public UserDtoResponse getUserByTgId(Long tgId) {
+        User user = userRepository.findByTgId(tgId).orElseThrow(() -> new NotFoundException(
+                ErrorCode.USER_NOT_FOUND,
+                "User with tgId=%d was not found".formatted(tgId)
         ));
 
-        return userMapper.toUserDto(user);
+        return userMapper.toUserDtoResponse(user);
     }
 }
