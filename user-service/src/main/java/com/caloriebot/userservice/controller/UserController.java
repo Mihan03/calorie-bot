@@ -1,7 +1,7 @@
 package com.caloriebot.userservice.controller;
 
 import com.caloriebot.userservice.dto.UserDtoResponse;
-import com.caloriebot.userservice.service.UserServiceImpl;
+import com.caloriebot.userservice.service.UserService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Getter
 public class UserController {
 
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
-    @GetMapping(value = "/{tgId}")
+    @GetMapping(value = "/by-telegram/{tgId}")
     public ResponseEntity<UserDtoResponse> getUserByTgId(@PathVariable Long tgId) {
         return ResponseEntity.ok(userService.getUserByTgId(tgId));
     }
