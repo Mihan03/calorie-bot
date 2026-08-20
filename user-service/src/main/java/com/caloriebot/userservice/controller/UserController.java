@@ -1,14 +1,13 @@
 package com.caloriebot.userservice.controller;
 
+import com.caloriebot.userservice.dto.UserDtoRequest;
 import com.caloriebot.userservice.dto.UserDtoResponse;
 import com.caloriebot.userservice.service.UserService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -21,5 +20,10 @@ public class UserController {
     @GetMapping(value = "/by-telegram/{tgId}")
     public ResponseEntity<UserDtoResponse> getUserByTgId(@PathVariable Long tgId) {
         return ResponseEntity.ok(userService.getUserByTgId(tgId));
+    }
+
+    @PostMapping(value = "/processing-start")
+    public ResponseEntity<UserDtoResponse> processingStart(@RequestBody @Validated UserDtoRequest userDtoRequest) {
+        return ResponseEntity.ok(userService.processingStart(userDtoRequest));
     }
 }

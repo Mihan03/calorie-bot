@@ -9,5 +9,6 @@ import org.mapstruct.MappingConstants;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface UserMapper {
     @Mapping(source = "id", target = "userId")
+    @Mapping(source = "userState.state", target = "userState")
     UserDtoResponse toUserDtoResponse(UserEntity userEntity);
 }
