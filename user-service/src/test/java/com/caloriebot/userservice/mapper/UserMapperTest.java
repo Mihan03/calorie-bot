@@ -1,7 +1,7 @@
 package com.caloriebot.userservice.mapper;
 
 import com.caloriebot.userservice.dto.UserDtoResponse;
-import com.caloriebot.userservice.model.UserEntity;
+import com.caloriebot.userservice.model.entity.UserEntity;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;

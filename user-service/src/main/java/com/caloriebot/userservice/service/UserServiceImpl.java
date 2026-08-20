@@ -3,7 +3,7 @@ package com.caloriebot.userservice.service;
 import com.caloriebot.userservice.dto.*;
 import com.caloriebot.userservice.exception.NotFoundException;
 import com.caloriebot.userservice.mapper.UserMapper;
-import com.caloriebot.userservice.model.UserEntity;
+import com.caloriebot.userservice.model.entity.UserEntity;
 import com.caloriebot.userservice.repository.UserRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

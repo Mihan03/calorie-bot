@@ -1,6 +1,6 @@
 package com.caloriebot.userservice.repository;
 
-import com.caloriebot.userservice.model.UserEntity;
+import com.caloriebot.userservice.model.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,7 +1,7 @@
 package com.caloriebot.userservice.mapper;
 
 import com.caloriebot.userservice.dto.UserDtoResponse;
-import com.caloriebot.userservice.model.UserEntity;
+import com.caloriebot.userservice.model.entity.UserEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;

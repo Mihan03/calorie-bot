@@ -4,7 +4,7 @@ import com.caloriebot.userservice.dto.ErrorCode;
 import com.caloriebot.userservice.dto.UserDtoResponse;
 import com.caloriebot.userservice.exception.NotFoundException;
 import com.caloriebot.userservice.mapper.UserMapper;
-import com.caloriebot.userservice.model.UserEntity;
+import com.caloriebot.userservice.model.entity.UserEntity;
 import com.caloriebot.userservice.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

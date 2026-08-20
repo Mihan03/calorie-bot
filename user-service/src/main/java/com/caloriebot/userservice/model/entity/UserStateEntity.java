@@ -1,5 +1,6 @@
-package com.caloriebot.userservice.model;
+package com.caloriebot.userservice.model.entity;
 
+import com.caloriebot.userservice.model.enums.UserStates;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,8 +22,9 @@ public class UserStateEntity extends AuditableEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "state", nullable = false)
-    private String state;
+    private UserStates state;
 
     @Override
     public boolean equals(Object o) {
