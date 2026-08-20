@@ -4,28 +4,30 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.UUID;
 
-@Table(name = "users")
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
+@Table(name = "user_states")
 @AllArgsConstructor
-public class User extends AuditableEntity {
+@NoArgsConstructor
+@Getter
+public class UserStateEntity extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "tg_id", nullable = false)
-    private Long tgId;
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user;
+
+    @Column(name = "state", nullable = false)
+    private String state;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof User other)) return false;
+        if (!(o instanceof UserStateEntity other)) return false;
         return id != null && id.equals(other.id);
     }
 

@@ -1,7 +1,7 @@
 package com.caloriebot.userservice.mapper;
 
 import com.caloriebot.userservice.dto.UserDtoResponse;
-import com.caloriebot.userservice.model.User;
+import com.caloriebot.userservice.model.UserEntity;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -13,10 +13,12 @@ public class UserMapperTest {
     @Test
     void shouldMapUserToUserDtoResponse() {
         UserMapper userMapper = new UserMapperImpl();
-        User inputUser = new User(UUID.randomUUID(), 1L);
+        UserEntity inputUserEntity = new UserEntity();
+        inputUserEntity.setId(UUID.randomUUID());
+        inputUserEntity.setTgId(1L);
 
-        UserDtoResponse userDtoResponse = userMapper.toUserDtoResponse(inputUser);
+        UserDtoResponse userDtoResponse = userMapper.toUserDtoResponse(inputUserEntity);
 
-        assertThat(userDtoResponse.userId()).isEqualTo(inputUser.getId());
+        assertThat(userDtoResponse.userId()).isEqualTo(inputUserEntity.getId());
     }
 }

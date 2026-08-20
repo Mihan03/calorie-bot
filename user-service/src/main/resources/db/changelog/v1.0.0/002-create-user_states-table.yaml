@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      id: "001-create-user_states-table"
+      author: "mihan03"
+      comment: "Создание таблицы пользователей"
+      changes:
+        - createTable:
+            tableName: user_states
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    unique: true
+                    foreignKeyName: fk_user_states_users
+                    references: users(id)
+              - column:
+                  name: state
+                  type: VARCHAR(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
