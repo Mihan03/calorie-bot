@@ -3,9 +3,9 @@ package com.caloriebot.gateway;
 import com.caloriebot.common.LoggingConstants;
 import com.caloriebot.gateway.service.MessageService;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
@@ -23,19 +23,20 @@ import java.util.UUID;
  */
 @Component
 @Slf4j
-public class TelegramSender implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
+@Getter
+@RequiredArgsConstructor
+public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
 
-    @Getter
     private final String botToken;
 
-    @Autowired
-    private MessageService messageService;
+    private final MessageService messageService;
 
     private final TelegramClient telegramClient;
 
-    public TelegramSender(@Value("${telegram.bot.token}") String botToken) {
+    public TelegramBot(@Value("${telegram.bot.token}") String botToken, MessageService messageService) {
         this.botToken = botToken;
         this.telegramClient = new OkHttpTelegramClient(botToken);
+        this.messageService = messageService;
     }
 
     @Override

@@ -5,7 +5,7 @@ import com.caloriebot.userservice.exception.NotFoundException;
 import com.caloriebot.userservice.mapper.UserMapper;
 import com.caloriebot.userservice.model.entity.UserEntity;
 import com.caloriebot.userservice.model.entity.UserStateEntity;
-import com.caloriebot.userservice.model.enums.UserStates;
+import com.caloriebot.userservice.model.enums.UserState;
 import com.caloriebot.userservice.repository.UserRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
         if (userEntity == null) {
             userEntity = new UserEntity();
             UserStateEntity userStateEntity = new UserStateEntity();
-            userStateEntity.setState(UserStates.NEW);
+            userStateEntity.setState(UserState.NEW);
             userStateEntity.setUser(userEntity);
 
             userEntity.setTgId(userDtoRequest.tgId());

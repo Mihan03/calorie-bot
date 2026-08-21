@@ -5,7 +5,7 @@ import com.caloriebot.userservice.dto.UserDtoResponse;
 import com.caloriebot.userservice.exception.NotFoundException;
 import com.caloriebot.userservice.mapper.UserMapper;
 import com.caloriebot.userservice.model.entity.UserEntity;
-import com.caloriebot.userservice.model.enums.UserStates;
+import com.caloriebot.userservice.model.enums.UserState;
 import com.caloriebot.userservice.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,7 +44,7 @@ public class UserServiceImplTest {
                 .willReturn(Optional.of(userEntity));
 
         given(userMapper.toUserDtoResponse(userEntity))
-                .willReturn(new UserDtoResponse(userEntity.getId(), UserStates.NEW.name()));
+                .willReturn(new UserDtoResponse(userEntity.getId(), UserState.NEW.name()));
 
         UserDtoResponse userDtoResponse = userService.getUserByTgId(userEntity.getTgId());
 

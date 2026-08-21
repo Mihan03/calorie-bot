@@ -1,6 +1,6 @@
 package com.caloriebot.userservice.model.enums;
 
-public enum UserStates {
+public enum UserState {
     NEW,
     WAITING_WEIGHT
 }
