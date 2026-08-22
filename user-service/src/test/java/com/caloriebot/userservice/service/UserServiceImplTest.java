@@ -4,7 +4,8 @@ import com.caloriebot.userservice.dto.ErrorCode;
 import com.caloriebot.userservice.dto.UserDtoResponse;
 import com.caloriebot.userservice.exception.NotFoundException;
 import com.caloriebot.userservice.mapper.UserMapper;
-import com.caloriebot.userservice.model.User;
+import com.caloriebot.userservice.model.entity.UserEntity;
+import com.caloriebot.userservice.model.enums.UserState;
 import com.caloriebot.userservice.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,19 +36,19 @@ public class UserServiceImplTest {
 
     @Test
     void shouldReturnUserDtoWhenUserExists() {
-        Long tgId = 1L;
-        UUID uuid = UUID.randomUUID();
-        User user = new User(uuid, tgId);
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(UUID.randomUUID());
+        userEntity.setTgId(1L);
 
-        given(userRepository.findByTgId(tgId))
-                .willReturn(Optional.of(user));
+        given(userRepository.findByTgId(userEntity.getTgId()))
+                .willReturn(Optional.of(userEntity));
 
-        given(userMapper.toUserDtoResponse(user))
-                .willReturn(new UserDtoResponse(uuid));
+        given(userMapper.toUserDtoResponse(userEntity))
+                .willReturn(new UserDtoResponse(userEntity.getId(), UserState.NEW.name()));
 
-        UserDtoResponse userDtoResponse = userService.getUserByTgId(tgId);
+        UserDtoResponse userDtoResponse = userService.getUserByTgId(userEntity.getTgId());
 
-        assertThat(userDtoResponse.userId()).isEqualTo(uuid);
+        assertThat(userDtoResponse.userId()).isEqualTo(userEntity.getId());
 
     }
 

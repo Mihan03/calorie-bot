@@ -1,2 +1,9 @@
 ### Найти пользователя по Telegram ID
 GET {{userServiceUrl}}/users/by-telegram/1
+### Начать обработку пользователя
+POST {{userServiceUrl}}/users/processing-start
+Content-Type: application/json
+
+{
+  "tgId": 1
+}
