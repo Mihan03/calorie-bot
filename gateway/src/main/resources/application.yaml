@@ -7,3 +7,6 @@ telegram:
 logging:
   pattern:
     level: "%5p [correlationId=%X{correlationId}]"
+services:
+  user-service:
+    url: "http://localhost:8081/api/v1"

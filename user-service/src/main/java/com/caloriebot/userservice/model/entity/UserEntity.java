@@ -36,4 +36,9 @@ public class UserEntity extends AuditableEntity {
     public int hashCode() {
         return getClass().hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "id=" + id + ", tgId=" + tgId + ", userState=" + userState.getState();
+    }
 }

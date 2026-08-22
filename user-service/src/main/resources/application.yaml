@@ -8,5 +8,8 @@ spring:
       ddl-auto: validate
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+logging:
+  pattern:
+    level: "%5p [correlationId=%X{correlationId}]"
 server:
   port: 8081

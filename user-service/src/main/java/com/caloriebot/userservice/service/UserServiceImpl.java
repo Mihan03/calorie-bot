@@ -9,9 +9,11 @@ import com.caloriebot.userservice.model.enums.UserState;
 import com.caloriebot.userservice.repository.UserRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @Getter
 @RequiredArgsConstructor
@@ -44,7 +46,12 @@ public class UserServiceImpl implements UserService {
             userEntity.setUserState(userStateEntity);
 
             userRepository.save(userEntity);
+
+            log.info("Был зарегистрирован пользователь с tgId={}, присвоено состояние={}",
+                    userDtoRequest.tgId(), UserState.NEW.name());
         }
+
+        log.info("Получен пользователь={}", userEntity);
 
         return userMapper.toUserDtoResponse(userEntity);
     }
