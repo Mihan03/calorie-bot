@@ -71,6 +71,11 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
                     telegramClient.execute(sendMessage);
                 } catch (RuntimeException e) {
                     log.error(e.getMessage(), e);
+                    telegramClient.execute(SendMessage
+                            .builder()
+                            .chatId(chatId)
+                            .text("Что-то пошло не то, повторите попытку позже...")
+                            .build());
                 }
             }
         } catch (TelegramApiException e) {
