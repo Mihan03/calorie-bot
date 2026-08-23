@@ -1,6 +1,7 @@
 package com.caloriebot.gateway;
 
 import com.caloriebot.common.LoggingConstants;
+import com.caloriebot.gateway.enums.BotMessage;
 import com.caloriebot.gateway.service.MessageService;
 import com.caloriebot.gateway.service.StartCommandHandler;
 import lombok.Getter;
@@ -57,26 +58,19 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
                 Long chatId = update.getMessage().getChatId();
                 log.info("Received update from chatId={}", chatId);
 
-                SendMessage sendMessage;
+                SendMessage sendMessage = messageService.getMessage(BotMessage.EXCEPTION_MESSAGE.getText(), chatId, null);
                 try {
                     if (("/start").equals(message.getText())) {
                         sendMessage = startCommandHandler.processStartHandler(message.getFrom().getId(), chatId);
                     } else {
-                        sendMessage = SendMessage
-                                .builder()
-                                .chatId(chatId)
-                                .text("Скоро...")
-                                .build();
+                        sendMessage = messageService.getMessage("Скоро...", chatId, null);
                     }
-                    telegramClient.execute(sendMessage);
+
                 } catch (RuntimeException e) {
                     log.error(e.getMessage(), e);
-                    telegramClient.execute(SendMessage
-                            .builder()
-                            .chatId(chatId)
-                            .text("Что-то пошло не то, повторите попытку позже...")
-                            .build());
                 }
+
+                telegramClient.execute(sendMessage);
             }
         } catch (TelegramApiException e) {
             log.error("Telegram API Exception", e);
