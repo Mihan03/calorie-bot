@@ -1,4 +1,4 @@
-package com.caloriebot.userservice.model;
+package com.caloriebot.userservice.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;

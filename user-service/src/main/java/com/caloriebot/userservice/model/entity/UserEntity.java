@@ -1,4 +1,4 @@
-package com.caloriebot.userservice.model;
+package com.caloriebot.userservice.model.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User extends AuditableEntity {
+public class UserEntity extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -22,15 +22,23 @@ public class User extends AuditableEntity {
     @Column(name = "tg_id", nullable = false)
     private Long tgId;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private UserStateEntity userState;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof User other)) return false;
+        if (!(o instanceof UserEntity other)) return false;
         return id != null && id.equals(other.id);
     }
 
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "id=" + id + ", tgId=" + tgId + ", userState=" + userState.getState();
     }
 }
