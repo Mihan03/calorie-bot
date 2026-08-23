@@ -58,16 +58,20 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
                 log.info("Received update from chatId={}", chatId);
 
                 SendMessage sendMessage;
-                if (("/start").equals(message.getText())) {
-                    sendMessage = startCommandHandler.processStartHandler(message.getFrom().getId(), chatId);
-                } else {
-                    sendMessage = SendMessage
-                            .builder()
-                            .chatId(chatId)
-                            .text("Скоро...")
-                            .build();
+                try {
+                    if (("/start").equals(message.getText())) {
+                        sendMessage = startCommandHandler.processStartHandler(message.getFrom().getId(), chatId);
+                    } else {
+                        sendMessage = SendMessage
+                                .builder()
+                                .chatId(chatId)
+                                .text("Скоро...")
+                                .build();
+                    }
+                    telegramClient.execute(sendMessage);
+                } catch (RuntimeException e) {
+                    log.error(e.getMessage(), e);
                 }
-                telegramClient.execute(sendMessage);
             }
         } catch (TelegramApiException e) {
             log.error("Telegram API Exception", e);
