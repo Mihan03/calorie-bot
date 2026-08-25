@@ -1,9 +1,11 @@
 package com.caloriebot.gateway;
 
 import com.caloriebot.common.LoggingConstants;
+import com.caloriebot.gateway.enums.BotKeyboard;
 import com.caloriebot.gateway.enums.BotMessage;
 import com.caloriebot.gateway.service.MessageService;
 import com.caloriebot.gateway.service.StartCommandHandler;
+import com.caloriebot.gateway.service.StartConfigureCallbackHandlerImpl;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -33,15 +35,17 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
     private final String botToken;
     private final MessageService messageService;
     private final StartCommandHandler startCommandHandler;
+    private final StartConfigureCallbackHandlerImpl startConfigureCallbackHandlerImpl;
 
     private final TelegramClient telegramClient;
 
     @Autowired
-    public TelegramBot(@Value("${telegram.bot.token}") String botToken, MessageService messageService, StartCommandHandler startCommandHandler) {
+    public TelegramBot(@Value("${telegram.bot.token}") String botToken, MessageService messageService, StartCommandHandler startCommandHandler, StartConfigureCallbackHandlerImpl startConfigureCallbackHandlerImpl) {
         this.botToken = botToken;
         this.telegramClient = new OkHttpTelegramClient(botToken);
         this.messageService = messageService;
         this.startCommandHandler = startCommandHandler;
+        this.startConfigureCallbackHandlerImpl = startConfigureCallbackHandlerImpl;
     }
 
     @Override
@@ -53,15 +57,19 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
     public void consume(Update update) {
         MDC.put(LoggingConstants.CORRELATION_ID, UUID.randomUUID().toString());
         try {
-            if (update.hasMessage() && update.getMessage().hasText()) {
-                Message message = update.getMessage();
-                Long chatId = update.getMessage().getChatId();
-                log.info("Received update from chatId={}", chatId);
+            SendMessage sendMessage = null;
+            BaseTelegramData telegramData = extractBaseData(update);
+            Long chatId = telegramData.chatId();
+            Long tgId = telegramData.tgId();
 
-                SendMessage sendMessage = messageService.getMessage(BotMessage.EXCEPTION_MESSAGE.getText(), chatId, null);
+            if (!telegramData.isCallback) {
+                Message message = update.getMessage();
+                String text = message.getText();
+                log.info("Received update from chatId={}, text={}", chatId, text);
+
                 try {
-                    if (("/start").equals(message.getText())) {
-                        sendMessage = startCommandHandler.processStartHandler(message.getFrom().getId(), chatId);
+                    if (("/start").equals(text)) {
+                        sendMessage = startCommandHandler.processStartHandler(tgId, chatId);
                     } else {
                         sendMessage = messageService.getMessage("Скоро...", chatId, null);
                     }
@@ -69,9 +77,23 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
                 } catch (RuntimeException e) {
                     log.error(e.getMessage(), e);
                 }
+            } else {
+                String callbackQuery = update.getCallbackQuery().getData();
 
-                telegramClient.execute(sendMessage);
+                log.info("Received update from chatId={}, callback={}, tgId={}", chatId, callbackQuery, tgId);
+                try {
+                    if (BotKeyboard.ONB_START.getCallback().equals(callbackQuery)) {
+                        sendMessage = startConfigureCallbackHandlerImpl.processStartConfigureHandler(tgId, chatId);
+                    }
+                } catch (RuntimeException e) {
+                    log.error(e.getMessage(), e);
+                }
             }
+
+            if (sendMessage == null) {
+                sendMessage = messageService.getMessage(BotMessage.EXCEPTION_MESSAGE.getText(), chatId, null);
+            }
+            telegramClient.execute(sendMessage);
         } catch (TelegramApiException e) {
             log.error("Telegram API Exception", e);
         } finally {
@@ -79,4 +101,25 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
         }
     }
 
+    private BaseTelegramData extractBaseData(Update update) {
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            return new BaseTelegramData(
+                    update.getMessage().getChatId(),
+                    update.getMessage().getFrom().getId(),
+                    false
+            );
+        } else {
+            return new BaseTelegramData(
+                    update.getCallbackQuery().getMessage().getChatId(),
+                    update.getCallbackQuery().getFrom().getId(),
+                    true
+            );
+        }
+    }
+
+    private record BaseTelegramData(
+        Long chatId,
+        Long tgId,
+        boolean isCallback
+    ) {}
 }

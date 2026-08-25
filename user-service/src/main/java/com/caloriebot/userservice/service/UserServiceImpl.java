@@ -22,12 +22,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     public UserDtoResponse getUserByTgId(Long tgId) {
-        UserEntity userEntity = userRepository.findByTgId(tgId).orElseThrow(() -> new NotFoundException(
-                ErrorCode.USER_NOT_FOUND,
-                "User with tgId=%d was not found".formatted(tgId)
-        ));
-
-        return userMapper.toUserDtoResponse(userEntity);
+        return userMapper.toUserDtoResponse(getUserEntity(tgId));
     }
 
     @Override
@@ -54,5 +49,26 @@ public class UserServiceImpl implements UserService {
         log.info("Получен пользователь={}", userEntity);
 
         return userMapper.toUserDtoResponse(userEntity);
+    }
+
+    @Transactional
+    public StartConfigureDtoResponse processingStateStartConfigure(Long tgId) {
+        UserEntity userEntity = getUserEntity(tgId);
+
+        int rowUpdated = userRepository.changeState(userEntity, UserState.NEW, UserState.WAITING_WEIGHT);
+        if (rowUpdated != 1) {
+            log.error("Требуемое состояние - {}, текущее - {}", UserState.WAITING_WEIGHT.name(), userEntity.getUserState().getState());
+            return new StartConfigureDtoResponse(userEntity.getUserState().getState(), false);
+        }
+
+        log.info("User state was changed from {} to {}", UserState.NEW.name(), UserState.WAITING_WEIGHT.name());
+        return new StartConfigureDtoResponse(UserState.WAITING_WEIGHT, true);
+    }
+
+    private UserEntity getUserEntity(Long tgId) {
+        return userRepository.findByTgId(tgId).orElseThrow(() -> new NotFoundException(
+                ErrorCode.USER_NOT_FOUND,
+                "User with tgId=%d was not found".formatted(tgId)
+        ));
     }
 }

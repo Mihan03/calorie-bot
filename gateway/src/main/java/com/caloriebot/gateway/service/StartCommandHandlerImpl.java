@@ -3,6 +3,7 @@ package com.caloriebot.gateway.service;
 import com.caloriebot.gateway.client.UserServiceClient;
 import com.caloriebot.gateway.client.dto.UserRequestDto;
 import com.caloriebot.gateway.client.dto.UserResponseDto;
+import com.caloriebot.gateway.enums.BotKeyboard;
 import com.caloriebot.gateway.enums.BotMessage;
 import com.caloriebot.gateway.util.InlineKeyboardBuilder;
 import lombok.Getter;
@@ -27,7 +28,7 @@ public class StartCommandHandlerImpl implements StartCommandHandler {
         log.info("Был получен user={} ", user.toString());
 
         InlineKeyboardMarkup markup = new InlineKeyboardBuilder()
-                .button("Начать настройку", "start_configure").row().build();
+                .button(BotKeyboard.ONB_START).row().build();
 
         return messageService.getMessage(BotMessage.WELCOME_MESSAGE.getText(), chatId, markup);
     }

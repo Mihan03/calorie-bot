@@ -1,5 +1,6 @@
 package com.caloriebot.gateway.util;
 
+import com.caloriebot.gateway.enums.BotKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
@@ -11,11 +12,11 @@ public class InlineKeyboardBuilder {
     private final List<InlineKeyboardButton> buttons = new ArrayList<>();
     private final List<InlineKeyboardRow> rows = new ArrayList<>();
 
-    public InlineKeyboardBuilder button(String text, String callback) {
+    public InlineKeyboardBuilder button(BotKeyboard keyboard) {
         buttons.add(
                 InlineKeyboardButton.builder()
-                        .text(text)
-                        .callbackData(callback)
+                        .text(keyboard.getText())
+                        .callbackData(keyboard.getCallback())
                         .build()
         );
 
