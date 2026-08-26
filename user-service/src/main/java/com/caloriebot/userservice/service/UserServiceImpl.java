@@ -7,6 +7,7 @@ import com.caloriebot.userservice.model.entity.UserEntity;
 import com.caloriebot.userservice.model.entity.UserStateEntity;
 import com.caloriebot.userservice.model.enums.UserState;
 import com.caloriebot.userservice.repository.UserRepository;
+import com.caloriebot.userservice.repository.UserStateRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final UserStateRepository userStateRepository;
     private final UserMapper userMapper;
 
     public UserDtoResponse getUserByTgId(Long tgId) {
@@ -53,16 +55,37 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public StartConfigureDtoResponse processingStateStartConfigure(Long tgId) {
-        UserEntity userEntity = getUserEntity(tgId);
-
-        int rowUpdated = userRepository.changeState(userEntity, UserState.NEW, UserState.WAITING_WEIGHT);
+        int rowUpdated = userStateRepository.changeState(tgId, UserState.NEW, UserState.WAITING_WEIGHT);
         if (rowUpdated != 1) {
-            log.error("Требуемое состояние - {}, текущее - {}", UserState.WAITING_WEIGHT.name(), userEntity.getUserState().getState());
+            UserEntity userEntity = getUserEntity(tgId);
+            log.info("Требуемое исходное состояние - {}, текущее - {}", UserState.NEW.name(), userEntity.getUserState().getState());
             return new StartConfigureDtoResponse(userEntity.getUserState().getState(), false);
         }
 
         log.info("User state was changed from {} to {}", UserState.NEW.name(), UserState.WAITING_WEIGHT.name());
         return new StartConfigureDtoResponse(UserState.WAITING_WEIGHT, true);
+    }
+
+    @Transactional
+    public void restartOnboarding(Long tgId) {
+        int rowsUpdated = userStateRepository.updateStateByTgId(
+                tgId,
+                UserState.WAITING_WEIGHT
+        );
+
+        if (rowsUpdated == 1) {
+            return;
+        }
+
+        UserEntity user = getUserEntity(tgId);
+
+        log.error(
+                "User {} exists, but its onboarding state was not updated",
+                user
+        );
+        throw new IllegalStateException(
+                "User state is missing or inconsistent for userId=" + user.getId()
+        );
     }
 
     private UserEntity getUserEntity(Long tgId) {

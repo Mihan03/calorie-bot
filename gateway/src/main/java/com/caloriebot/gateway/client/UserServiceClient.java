@@ -6,6 +6,6 @@ import com.caloriebot.gateway.client.dto.UserResponseDto;
 
 public interface UserServiceClient {
    UserResponseDto processingStart(UserRequestDto userRequestDto);
-
    StartConfigureDtoResponse processingStateStartConfigure(Long tgId);
+   void restartOnboarding(Long tgId);
 }

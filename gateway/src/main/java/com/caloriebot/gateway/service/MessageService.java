@@ -11,4 +11,6 @@ public interface MessageService {
     SendMessage getMessage(String textMessage,
                            Long chatId,
                            InlineKeyboardMarkup markup);
+
+    SendMessage getMessageByScreen(Screen screen, Long chatId);
 }

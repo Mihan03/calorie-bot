@@ -5,7 +5,7 @@ import com.caloriebot.gateway.enums.BotKeyboard;
 import com.caloriebot.gateway.enums.BotMessage;
 import com.caloriebot.gateway.service.MessageService;
 import com.caloriebot.gateway.service.StartCommandHandler;
-import com.caloriebot.gateway.service.StartConfigureCallbackHandlerImpl;
+import com.caloriebot.gateway.service.StartConfigureCallbackHandler;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -16,6 +16,7 @@ import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsumer;
 import org.telegram.telegrambots.longpolling.starter.SpringLongPollingBot;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
@@ -35,17 +36,17 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
     private final String botToken;
     private final MessageService messageService;
     private final StartCommandHandler startCommandHandler;
-    private final StartConfigureCallbackHandlerImpl startConfigureCallbackHandlerImpl;
+    private final StartConfigureCallbackHandler startConfigureCallbackHandler;
 
     private final TelegramClient telegramClient;
 
     @Autowired
-    public TelegramBot(@Value("${telegram.bot.token}") String botToken, MessageService messageService, StartCommandHandler startCommandHandler, StartConfigureCallbackHandlerImpl startConfigureCallbackHandlerImpl) {
+    public TelegramBot(@Value("${telegram.bot.token}") String botToken, MessageService messageService, StartCommandHandler startCommandHandler, StartConfigureCallbackHandler startConfigureCallbackHandler) {
         this.botToken = botToken;
         this.telegramClient = new OkHttpTelegramClient(botToken);
         this.messageService = messageService;
         this.startCommandHandler = startCommandHandler;
-        this.startConfigureCallbackHandlerImpl = startConfigureCallbackHandlerImpl;
+        this.startConfigureCallbackHandler = startConfigureCallbackHandler;
     }
 
     @Override
@@ -77,22 +78,25 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
                 } catch (RuntimeException e) {
                     log.error(e.getMessage(), e);
                 }
-            } else {
+            } else if (telegramData.isCallback) {
                 String callbackQuery = update.getCallbackQuery().getData();
+
+                sendAnswerCallbackQuery(update.getCallbackQuery().getId());
 
                 log.info("Received update from chatId={}, callback={}, tgId={}", chatId, callbackQuery, tgId);
                 try {
                     if (BotKeyboard.ONB_START.getCallback().equals(callbackQuery)) {
-                        sendMessage = startConfigureCallbackHandlerImpl.processStartConfigureHandler(tgId, chatId);
+                        sendMessage = startConfigureCallbackHandler.processStartConfigureHandler(tgId, chatId);
+                    } else if (BotKeyboard.ONB_RESTART.getCallback().equals(callbackQuery)) {
+                        sendMessage = startCommandHandler.processRestartHandler(tgId, chatId);
                     }
                 } catch (RuntimeException e) {
                     log.error(e.getMessage(), e);
                 }
-            }
-
-            if (sendMessage == null) {
+            } else {
                 sendMessage = messageService.getMessage(BotMessage.EXCEPTION_MESSAGE.getText(), chatId, null);
             }
+
             telegramClient.execute(sendMessage);
         } catch (TelegramApiException e) {
             log.error("Telegram API Exception", e);
@@ -108,13 +112,23 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
                     update.getMessage().getFrom().getId(),
                     false
             );
-        } else {
+        } else if (update.hasCallbackQuery()) {
             return new BaseTelegramData(
                     update.getCallbackQuery().getMessage().getChatId(),
                     update.getCallbackQuery().getFrom().getId(),
                     true
             );
         }
+
+        return null;
+    }
+
+    private void sendAnswerCallbackQuery(String callbackId) throws TelegramApiException {
+        telegramClient.execute(
+                AnswerCallbackQuery.builder()
+                        .callbackQueryId(callbackId)
+                        .build()
+        );
     }
 
     private record BaseTelegramData(

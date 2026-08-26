@@ -6,8 +6,7 @@ import com.caloriebot.userservice.dto.UserDtoResponse;
 
 public interface UserService {
     UserDtoResponse getUserByTgId(Long tgId);
-
     UserDtoResponse processingStart(UserDtoRequest userDtoRequest);
-
     StartConfigureDtoResponse processingStateStartConfigure(Long tgId);
+    void restartOnboarding(Long tgId);
 }

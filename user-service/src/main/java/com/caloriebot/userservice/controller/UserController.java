@@ -29,7 +29,7 @@ public class UserController {
         return ResponseEntity.ok(userService.processingStart(userDtoRequest));
     }
 
-    @PostMapping(value = "/by-telegram/{tgId}/state/start-configure")
+    @PostMapping(value = "/by-telegram/{tgId}/onboarding/start-configure")
     public ResponseEntity<StartConfigureDtoResponse> processingStateStartConfigure(@PathVariable Long tgId) {
         StartConfigureDtoResponse response = userService.processingStateStartConfigure(tgId);
 
@@ -37,5 +37,11 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
         }
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping(value = "by-telegram/{tgId}/onboarding/restart")
+    public ResponseEntity<Void> restart(@PathVariable Long tgId) {
+        userService.restartOnboarding(tgId);
+        return ResponseEntity.ok().build();
     }
 }

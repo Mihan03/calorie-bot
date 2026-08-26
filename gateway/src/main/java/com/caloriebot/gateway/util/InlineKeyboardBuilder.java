@@ -23,6 +23,11 @@ public class InlineKeyboardBuilder {
         return this;
     }
 
+    public InlineKeyboardBuilder buttons(List<BotKeyboard> keyboards) {
+        keyboards.forEach(kb -> this.button(kb).row());
+        return this;
+    }
+
     public InlineKeyboardBuilder row() {
         rows.add(new InlineKeyboardRow(buttons));
         buttons.clear();

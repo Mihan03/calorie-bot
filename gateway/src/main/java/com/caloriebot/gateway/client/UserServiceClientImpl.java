@@ -23,10 +23,17 @@ public class UserServiceClientImpl implements UserServiceClient {
 
     public StartConfigureDtoResponse processingStateStartConfigure(Long tgId) {
         return restClient.post()
-                .uri("/users/by-telegram/{tgId}/state/start-configure", tgId)
+                .uri("/users/by-telegram/{tgId}/onboarding/start-configure", tgId)
                 .retrieve()
                 // 409 - isn't error
                 .onStatus(status -> status == HttpStatus.CONFLICT, (_, _) -> { })
                 .body(StartConfigureDtoResponse.class);
+    }
+
+    public void restartOnboarding(Long tgId) {
+        restClient.post()
+                .uri("/users/by-telegram/{tgId}/onboarding/restart", tgId)
+                .retrieve()
+                .toBodilessEntity();
     }
 }
