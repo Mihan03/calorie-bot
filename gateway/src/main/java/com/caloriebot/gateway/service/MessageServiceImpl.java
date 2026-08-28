@@ -1,6 +1,7 @@
 package com.caloriebot.gateway.service;
 
-import com.caloriebot.gateway.util.InlineKeyboardBuilder;
+import com.caloriebot.gateway.screen.Screen;
+import com.caloriebot.gateway.screen.InlineKeyboardBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -27,16 +28,16 @@ public class MessageServiceImpl implements MessageService {
     public SendMessage getMessageByScreen(Screen screen, Long chatId) {
 
         InlineKeyboardMarkup markup = new InlineKeyboardBuilder()
-                .buttons(screen.getKeyboards()).build();
+                .buttons(screen.keyboards()).build();
 
         SendMessage message = SendMessage
                 .builder()
                 .chatId(chatId)
-                .text(screen.getMessage().getText())
+                .text(screen.message().getText())
                 .replyMarkup(markup)
                 .build();
 
-        log.info("Сформировано сообщение с текстом ={} в chatId={} ", screen.getMessage().getText(), chatId);
+        log.info("Сформировано сообщение с текстом ={} в chatId={} ", screen.message().getText(), chatId);
 
         return message;
     }

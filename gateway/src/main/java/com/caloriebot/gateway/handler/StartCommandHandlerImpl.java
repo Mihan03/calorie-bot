@@ -1,9 +1,11 @@
-package com.caloriebot.gateway.service;
+package com.caloriebot.gateway.handler;
 
 import com.caloriebot.gateway.client.UserServiceClient;
 import com.caloriebot.gateway.client.dto.UserRequestDto;
 import com.caloriebot.gateway.client.dto.UserResponseDto;
-import com.caloriebot.gateway.enums.UserState;
+import com.caloriebot.gateway.UserState;
+import com.caloriebot.gateway.service.MessageService;
+import com.caloriebot.gateway.screen.StateMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

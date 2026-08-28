@@ -1,6 +1,5 @@
-package com.caloriebot.gateway.util;
+package com.caloriebot.gateway.screen;
 
-import com.caloriebot.gateway.enums.BotKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;

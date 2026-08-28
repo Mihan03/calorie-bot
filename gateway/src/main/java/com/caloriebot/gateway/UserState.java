@@ -1,4 +1,4 @@
-package com.caloriebot.gateway.enums;
+package com.caloriebot.gateway;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -1,8 +1,6 @@
-package com.caloriebot.gateway.service;
+package com.caloriebot.gateway.screen;
 
-import com.caloriebot.gateway.enums.BotKeyboard;
-import com.caloriebot.gateway.enums.BotMessage;
-import com.caloriebot.gateway.enums.UserState;
+import com.caloriebot.gateway.UserState;
 
 import java.util.List;
 import java.util.Map;

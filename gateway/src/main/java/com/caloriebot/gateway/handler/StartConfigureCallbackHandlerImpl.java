@@ -1,11 +1,14 @@
-package com.caloriebot.gateway.service;
+package com.caloriebot.gateway.handler;
 
 import com.caloriebot.gateway.client.UserServiceClient;
 import com.caloriebot.gateway.client.dto.StartConfigureDtoResponse;
-import com.caloriebot.gateway.enums.BotKeyboard;
-import com.caloriebot.gateway.enums.BotMessage;
-import com.caloriebot.gateway.enums.UserState;
-import com.caloriebot.gateway.util.InlineKeyboardBuilder;
+import com.caloriebot.gateway.screen.BotKeyboard;
+import com.caloriebot.gateway.screen.BotMessage;
+import com.caloriebot.gateway.UserState;
+import com.caloriebot.gateway.service.MessageService;
+import com.caloriebot.gateway.screen.Screen;
+import com.caloriebot.gateway.screen.StateMap;
+import com.caloriebot.gateway.screen.InlineKeyboardBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,8 +31,8 @@ public class StartConfigureCallbackHandlerImpl implements StartConfigureCallback
             Screen screen = StateMap.getScreen(currentState);
 
             InlineKeyboardMarkup markup = new InlineKeyboardBuilder().button(BotKeyboard.ONB_RESTART).build();
-            return messageService.getMessage(BotMessage.CURRENT_STEP.getText() + "\"" + screen.getMessage().getShortName() + "\". " +
-                    screen.getMessage().getText(), chatId, markup);
+            return messageService.getMessage(BotMessage.CURRENT_STEP.getText() + "\"" + screen.message().getShortName() + "\". " +
+                    screen.message().getText(), chatId, markup);
         }
 
         return messageService.getMessageByScreen(StateMap.getScreen(UserState.WAITING_WEIGHT), chatId);

@@ -1,11 +1,11 @@
 package com.caloriebot.gateway;
 
 import com.caloriebot.common.LoggingConstants;
-import com.caloriebot.gateway.enums.BotKeyboard;
-import com.caloriebot.gateway.enums.BotMessage;
+import com.caloriebot.gateway.screen.BotKeyboard;
+import com.caloriebot.gateway.screen.BotMessage;
 import com.caloriebot.gateway.service.MessageService;
-import com.caloriebot.gateway.service.StartCommandHandler;
-import com.caloriebot.gateway.service.StartConfigureCallbackHandler;
+import com.caloriebot.gateway.handler.StartCommandHandler;
+import com.caloriebot.gateway.handler.StartConfigureCallbackHandler;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -40,6 +40,10 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
 
     private final TelegramClient telegramClient;
 
+    private final String MEDIA_TYPE = "media";
+    private final String MESSAGE_TYPE = "message";
+    private final String CALLBACK_TYPE = "callback";
+
     @Autowired
     public TelegramBot(@Value("${telegram.bot.token}") String botToken, MessageService messageService, StartCommandHandler startCommandHandler, StartConfigureCallbackHandler startConfigureCallbackHandler) {
         this.botToken = botToken;
@@ -63,7 +67,9 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
             Long chatId = telegramData.chatId();
             Long tgId = telegramData.tgId();
 
-            if (!telegramData.isCallback) {
+            sendMessage = messageService.getMessage(BotMessage.EXCEPTION_MESSAGE.getText(), chatId, null);
+
+            if (telegramData.type.equalsIgnoreCase(MESSAGE_TYPE)) {
                 Message message = update.getMessage();
                 String text = message.getText();
                 log.info("Received update from chatId={}, text={}", chatId, text);
@@ -78,7 +84,7 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
                 } catch (RuntimeException e) {
                     log.error(e.getMessage(), e);
                 }
-            } else if (telegramData.isCallback) {
+            } else if (telegramData.type.equals(CALLBACK_TYPE)) {
                 String callbackQuery = update.getCallbackQuery().getData();
 
                 sendAnswerCallbackQuery(update.getCallbackQuery().getId());
@@ -93,8 +99,6 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
                 } catch (RuntimeException e) {
                     log.error(e.getMessage(), e);
                 }
-            } else {
-                sendMessage = messageService.getMessage(BotMessage.EXCEPTION_MESSAGE.getText(), chatId, null);
             }
 
             telegramClient.execute(sendMessage);
@@ -110,13 +114,13 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
             return new BaseTelegramData(
                     update.getMessage().getChatId(),
                     update.getMessage().getFrom().getId(),
-                    false
+                    MESSAGE_TYPE
             );
         } else if (update.hasCallbackQuery()) {
             return new BaseTelegramData(
                     update.getCallbackQuery().getMessage().getChatId(),
                     update.getCallbackQuery().getFrom().getId(),
-                    true
+                    CALLBACK_TYPE
             );
         }
 
@@ -134,6 +138,6 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
     private record BaseTelegramData(
         Long chatId,
         Long tgId,
-        boolean isCallback
+        String type
     ) {}
 }
