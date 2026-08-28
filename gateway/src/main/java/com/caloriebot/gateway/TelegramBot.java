@@ -62,14 +62,13 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
     public void consume(Update update) {
         MDC.put(LoggingConstants.CORRELATION_ID, UUID.randomUUID().toString());
         try {
-            SendMessage sendMessage = null;
             BaseTelegramData telegramData = extractBaseData(update);
             Long chatId = telegramData.chatId();
             Long tgId = telegramData.tgId();
 
-            sendMessage = messageService.getMessage(BotMessage.EXCEPTION_MESSAGE.getText(), chatId, null);
+            SendMessage sendMessage = messageService.getMessage(BotMessage.EXCEPTION_MESSAGE.getText(), chatId, null);
 
-            if (telegramData.type.equalsIgnoreCase(MESSAGE_TYPE)) {
+            if (telegramData.type.equals(MESSAGE_TYPE)) {
                 Message message = update.getMessage();
                 String text = message.getText();
                 log.info("Received update from chatId={}, text={}", chatId, text);
@@ -110,13 +109,7 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
     }
 
     private BaseTelegramData extractBaseData(Update update) {
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            return new BaseTelegramData(
-                    update.getMessage().getChatId(),
-                    update.getMessage().getFrom().getId(),
-                    MESSAGE_TYPE
-            );
-        } else if (update.hasCallbackQuery()) {
+        if (update.hasCallbackQuery()) {
             return new BaseTelegramData(
                     update.getCallbackQuery().getMessage().getChatId(),
                     update.getCallbackQuery().getFrom().getId(),
@@ -124,7 +117,11 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
             );
         }
 
-        return null;
+        return new BaseTelegramData(
+                update.getMessage().getChatId(),
+                update.getMessage().getFrom().getId(),
+                MESSAGE_TYPE
+        );
     }
 
     private void sendAnswerCallbackQuery(String callbackId) throws TelegramApiException {
