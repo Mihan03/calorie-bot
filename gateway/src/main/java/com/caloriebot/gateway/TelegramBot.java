@@ -144,6 +144,6 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
     private record BaseTelegramData(
         Long chatId,
         Long tgId,
-        TelegramBotMessageType  messageType
+        TelegramBotMessageType messageType
     ) {}
 }
