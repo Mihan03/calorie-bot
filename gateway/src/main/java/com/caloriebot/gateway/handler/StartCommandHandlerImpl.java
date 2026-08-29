@@ -28,10 +28,4 @@ public class StartCommandHandlerImpl implements StartCommandHandler {
 
         return messageService.getMessageByScreen(StateMap.getScreen(UserState.NEW), chatId);
     }
-
-    public SendMessage processRestartHandler(Long tgId, Long chatId) {
-        userServiceClient.restartOnboarding(tgId);
-
-        return messageService.getMessageByScreen(StateMap.getScreen(UserState.WAITING_WEIGHT), chatId);
-    }
 }

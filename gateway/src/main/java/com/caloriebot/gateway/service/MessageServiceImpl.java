@@ -20,12 +20,16 @@ public class MessageServiceImpl implements MessageService {
                 .replyMarkup(markup)
                 .build();
 
-        log.info("Сформировано сообщение с текстом ={} в chatId={} ", textMessage, chatId);
+        writeLog(textMessage, chatId);
 
         return message;
     }
 
     public SendMessage getMessageByScreen(Screen screen, Long chatId) {
+        return getMessageByScreen(screen, chatId, "");
+    }
+
+    public SendMessage getMessageByScreen(Screen screen, Long chatId, String prefix) {
 
         InlineKeyboardMarkup markup = new InlineKeyboardBuilder()
                 .buttons(screen.keyboards()).build();
@@ -33,12 +37,16 @@ public class MessageServiceImpl implements MessageService {
         SendMessage message = SendMessage
                 .builder()
                 .chatId(chatId)
-                .text(screen.message().getText())
+                .text(prefix + screen.message().getText())
                 .replyMarkup(markup)
                 .build();
 
-        log.info("Сформировано сообщение с текстом ={} в chatId={} ", screen.message().getText(), chatId);
+        writeLog(screen.message().getText(), chatId);
 
         return message;
+    }
+
+    private void writeLog(String text, Long chatId) {
+        log.info("Сформировано сообщение с текстом ={} в chatId={} ", text, chatId);
     }
 }

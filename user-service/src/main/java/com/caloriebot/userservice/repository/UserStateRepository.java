@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.UUID;
 
 @Repository
@@ -16,6 +17,6 @@ public interface UserStateRepository extends JpaRepository<UserStateEntity, UUID
     int changeState(Long tgId, UserState from, UserState to);
 
     @Modifying
-    @Query("update UserStateEntity s set s.state = :to where s.user.tgId = :tgId")
-    int updateStateByTgId(Long tgId, UserState to);
+    @Query("update UserStateEntity s set s.state = :to where s.user.tgId = :tgId and s.state IN :from")
+    int restartOnboarding(Long tgId, Collection<UserState> from, UserState to);
 }

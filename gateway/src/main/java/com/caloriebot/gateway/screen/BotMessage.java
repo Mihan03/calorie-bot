@@ -20,7 +20,7 @@ public enum BotMessage {
     WAITING_WEIGHT("Шаг 1 из 6. Укажи свой вес в килограммах, например: 78,5", "вес"),
     WAITING_HEIGHT("Шаг 2 из 6. Укажи рост в сантиметрах — например: 180", "рост"),
 
-    CURRENT_STEP("Настройка уже идет, вы на шаге ", null),
+    CURRENT_STEP("Настройка уже идёт, вы на шаге «%s».%n%n", null),
     EXCEPTION_MESSAGE("Что-то пошло не то, повторите попытку попозже...", null);
 
     private final String text;

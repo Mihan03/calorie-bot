@@ -13,7 +13,7 @@ public final class StateMap {
             UserState.NEW,  new Screen(BotMessage.WELCOME_MESSAGE, List.of(BotKeyboard.ONB_START)),
             UserState.WAITING_WEIGHT, new Screen(BotMessage.WAITING_WEIGHT,
                     List.of(BotKeyboard.ONB_RESTART)),
-            UserState.WAITING_HEIGHT, new Screen(BotMessage.WAITING_HEIGHT, List.of())
+            UserState.WAITING_HEIGHT, new Screen(BotMessage.WAITING_HEIGHT, List.of(BotKeyboard.ONB_RESTART))
     );
 
     public static Screen getScreen(UserState userState) {

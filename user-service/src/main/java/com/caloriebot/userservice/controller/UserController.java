@@ -1,6 +1,7 @@
 package com.caloriebot.userservice.controller;
 
-import com.caloriebot.userservice.dto.StartConfigureDtoResponse;
+import com.caloriebot.userservice.dto.RestartResponseDto;
+import com.caloriebot.userservice.dto.StartConfigureResponseDto;
 import com.caloriebot.userservice.dto.UserDtoRequest;
 import com.caloriebot.userservice.dto.UserDtoResponse;
 import com.caloriebot.userservice.service.UserService;
@@ -30,8 +31,8 @@ public class UserController {
     }
 
     @PostMapping(value = "/by-telegram/{tgId}/onboarding/start-configure")
-    public ResponseEntity<StartConfigureDtoResponse> processingStateStartConfigure(@PathVariable Long tgId) {
-        StartConfigureDtoResponse response = userService.processingStateStartConfigure(tgId);
+    public ResponseEntity<StartConfigureResponseDto> processingStateStartConfigure(@PathVariable Long tgId) {
+        StartConfigureResponseDto response = userService.processingStateStartConfigure(tgId);
 
         if (!response.applied()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
@@ -40,8 +41,13 @@ public class UserController {
     }
 
     @PostMapping(value = "by-telegram/{tgId}/onboarding/restart")
-    public ResponseEntity<Void> restart(@PathVariable Long tgId) {
-        userService.restartOnboarding(tgId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<RestartResponseDto> restart(@PathVariable Long tgId) {
+        RestartResponseDto response = userService.restartOnboarding(tgId);
+
+        if (!response.applied()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        }
+
+        return ResponseEntity.ok(response);
     }
 }

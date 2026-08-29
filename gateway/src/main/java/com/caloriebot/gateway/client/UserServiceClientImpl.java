@@ -1,6 +1,7 @@
 package com.caloriebot.gateway.client;
 
-import com.caloriebot.gateway.client.dto.StartConfigureDtoResponse;
+import com.caloriebot.gateway.client.dto.RestartResponseDto;
+import com.caloriebot.gateway.client.dto.StartConfigureResponseDto;
 import com.caloriebot.gateway.client.dto.UserRequestDto;
 import com.caloriebot.gateway.client.dto.UserResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -21,19 +22,19 @@ public class UserServiceClientImpl implements UserServiceClient {
                 .body(UserResponseDto.class);
     }
 
-    public StartConfigureDtoResponse processingStateStartConfigure(Long tgId) {
+    public StartConfigureResponseDto processingStateStartConfigure(Long tgId) {
         return restClient.post()
                 .uri("/users/by-telegram/{tgId}/onboarding/start-configure", tgId)
                 .retrieve()
                 // 409 - isn't error
                 .onStatus(status -> status == HttpStatus.CONFLICT, (_, _) -> { })
-                .body(StartConfigureDtoResponse.class);
+                .body(StartConfigureResponseDto.class);
     }
 
-    public void restartOnboarding(Long tgId) {
-        restClient.post()
+    public RestartResponseDto restartOnboarding(Long tgId) {
+        return restClient.post()
                 .uri("/users/by-telegram/{tgId}/onboarding/restart", tgId)
                 .retrieve()
-                .toBodilessEntity();
+                .body(RestartResponseDto.class);
     }
 }

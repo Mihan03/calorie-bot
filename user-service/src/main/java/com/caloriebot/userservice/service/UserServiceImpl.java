@@ -54,38 +54,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
-    public StartConfigureDtoResponse processingStateStartConfigure(Long tgId) {
+    public StartConfigureResponseDto processingStateStartConfigure(Long tgId) {
         int rowUpdated = userStateRepository.changeState(tgId, UserState.NEW, UserState.WAITING_WEIGHT);
         if (rowUpdated != 1) {
             UserEntity userEntity = getUserEntity(tgId);
             log.info("Требуемое исходное состояние - {}, текущее - {}", UserState.NEW.name(), userEntity.getUserState().getState());
-            return new StartConfigureDtoResponse(userEntity.getUserState().getState(), false);
+            return new StartConfigureResponseDto(userEntity.getUserState().getState(), false);
         }
 
         log.info("User state was changed from {} to {}", UserState.NEW.name(), UserState.WAITING_WEIGHT.name());
-        return new StartConfigureDtoResponse(UserState.WAITING_WEIGHT, true);
+        return new StartConfigureResponseDto(UserState.WAITING_WEIGHT, true);
     }
 
     @Transactional
-    public void restartOnboarding(Long tgId) {
-        int rowsUpdated = userStateRepository.updateStateByTgId(
+    public RestartResponseDto restartOnboarding(Long tgId) {
+        int rowsUpdated = userStateRepository.restartOnboarding(
                 tgId,
+                UserState.getOnboardingStates(),
                 UserState.WAITING_WEIGHT
         );
 
-        if (rowsUpdated == 1) {
-            return;
+        if (rowsUpdated != 1) {
+            UserEntity user = getUserEntity(tgId);
+            log.info("User {} exists, but its onboarding state was not updated", user);
+            return new RestartResponseDto(user.getUserState().getState(), false);
         }
 
-        UserEntity user = getUserEntity(tgId);
-
-        log.error(
-                "User {} exists, but its onboarding state was not updated",
-                user
-        );
-        throw new IllegalStateException(
-                "User state is missing or inconsistent for userId=" + user.getId()
-        );
+        return new RestartResponseDto(UserState.WAITING_WEIGHT, true);
     }
 
     private UserEntity getUserEntity(Long tgId) {
