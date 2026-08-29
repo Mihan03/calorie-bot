@@ -10,10 +10,18 @@ import java.util.Map;
  */
 public final class StateMap {
     private static final Map<UserState, Screen> STATES_MAP = Map.of(
-            UserState.NEW,  new Screen(BotMessage.WELCOME_MESSAGE, List.of(BotKeyboard.ONB_START)),
-            UserState.WAITING_WEIGHT, new Screen(BotMessage.WAITING_WEIGHT,
+            UserState.NEW, new Screen(
+                    BotMessage.WELCOME_MESSAGE,
+                    BotMessage.NO_PREFIX,
+                    List.of(BotKeyboard.ONB_START)),
+            UserState.WAITING_WEIGHT, new Screen(
+                    BotMessage.WAITING_WEIGHT,
+                    BotMessage.CURRENT_STEP,
                     List.of(BotKeyboard.ONB_RESTART)),
-            UserState.WAITING_HEIGHT, new Screen(BotMessage.WAITING_HEIGHT, List.of(BotKeyboard.ONB_RESTART))
+            UserState.WAITING_HEIGHT, new Screen(
+                    BotMessage.WAITING_HEIGHT,
+                    BotMessage.CURRENT_STEP,
+                    List.of(BotKeyboard.ONB_RESTART))
     );
 
     public static Screen getScreen(UserState userState) {

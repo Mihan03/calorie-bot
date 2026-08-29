@@ -3,7 +3,6 @@ package com.caloriebot.gateway.handler;
 import com.caloriebot.gateway.client.UserServiceClient;
 import com.caloriebot.gateway.client.dto.RestartResponseDto;
 import com.caloriebot.gateway.client.dto.StartConfigureResponseDto;
-import com.caloriebot.gateway.screen.BotMessage;
 import com.caloriebot.gateway.UserState;
 import com.caloriebot.gateway.service.MessageService;
 import com.caloriebot.gateway.screen.Screen;
@@ -32,13 +31,15 @@ public class StartConfigureCallbackHandlerImpl implements StartConfigureCallback
         return getSendMessage(chatId, response.applied(), response.userState());
     }
 
-    private SendMessage getSendMessage(Long chatId, boolean applied, String s) {
+    private SendMessage getSendMessage(Long chatId, boolean applied, String userState) {
         if (!applied) {
-            UserState currentState = UserState.valueOf(s);
-            Screen screen = StateMap.getScreen(currentState);
+            Screen screen = StateMap.getScreen(UserState.valueOf(userState));
 
-            return messageService.getMessageByScreen(screen, chatId,
-                    BotMessage.CURRENT_STEP.getText().formatted(screen.message().getShortName()));
+            String prefix = screen.conflictPrefix()
+                    .getText()
+                    .formatted(screen.message().getShortName());
+
+            return messageService.getMessageByScreen(screen, chatId, prefix);
         }
 
         return messageService.getMessageByScreen(StateMap.getScreen(UserState.WAITING_WEIGHT), chatId);

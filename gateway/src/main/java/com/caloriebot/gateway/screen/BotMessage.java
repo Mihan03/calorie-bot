@@ -21,7 +21,10 @@ public enum BotMessage {
     WAITING_HEIGHT("Шаг 2 из 6. Укажи рост в сантиметрах — например: 180", "рост"),
 
     CURRENT_STEP("Настройка уже идёт, вы на шаге «%s».%n%n", null),
-    EXCEPTION_MESSAGE("Что-то пошло не то, повторите попытку попозже...", null);
+    EXCEPTION_MESSAGE("Что-то пошло не то, повторите попытку попозже...", null),
+
+    /** Шапки нет: текст шага отправляется без пояснения. */
+    NO_PREFIX("", null);
 
     private final String text;
     private final String shortName;
