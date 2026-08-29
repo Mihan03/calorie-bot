@@ -37,7 +37,8 @@ public class StartConfigureCallbackHandlerImpl implements StartConfigureCallback
             UserState currentState = UserState.valueOf(s);
             Screen screen = StateMap.getScreen(currentState);
 
-            return messageService.getMessageByScreen(screen, chatId, BotMessage.CURRENT_STEP.getText());
+            return messageService.getMessageByScreen(screen, chatId,
+                    BotMessage.CURRENT_STEP.getText().formatted(screen.message().getShortName()));
         }
 
         return messageService.getMessageByScreen(StateMap.getScreen(UserState.WAITING_WEIGHT), chatId);
