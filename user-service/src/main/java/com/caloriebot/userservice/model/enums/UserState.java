@@ -5,18 +5,13 @@ import java.util.List;
 public enum UserState {
     NEW,
     WAITING_WEIGHT,
-    WAITING_HEIGHT,
-    WAITING_GENDER,
-    WAITING_ACTIVITY,
-    WAITING_GOAL_DIRECTION,
-    WAITING_GOAL_CONFIRMATION,
-    WAITING_GOAL_EDIT_FIELD,
-    WAITING_GOAL_EDIT_VALUE;
+    WAITING_HEIGHT;
 
-    // List of onboarding-states
+    /**
+     * Состояния незавершённого onboarding: из них разрешён переход «Начать заново».
+     * Список пополняется вместе с реализацией нового шага, см. README 15.10.
+     */
     public static List<UserState> getOnboardingStates() {
-        return List.of(WAITING_WEIGHT, WAITING_HEIGHT, WAITING_GENDER, WAITING_ACTIVITY,
-                WAITING_GOAL_DIRECTION, WAITING_GOAL_EDIT_FIELD, WAITING_GOAL_CONFIRMATION,
-                WAITING_GOAL_EDIT_VALUE);
+        return List.of(WAITING_WEIGHT, WAITING_HEIGHT);
     }
 }
