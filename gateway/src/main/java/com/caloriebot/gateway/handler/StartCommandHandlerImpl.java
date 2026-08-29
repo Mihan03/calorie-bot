@@ -1,16 +1,16 @@
-package com.caloriebot.gateway.service;
+package com.caloriebot.gateway.handler;
 
 import com.caloriebot.gateway.client.UserServiceClient;
 import com.caloriebot.gateway.client.dto.UserRequestDto;
 import com.caloriebot.gateway.client.dto.UserResponseDto;
-import com.caloriebot.gateway.enums.BotMessage;
-import com.caloriebot.gateway.util.InlineKeyboardBuilder;
+import com.caloriebot.gateway.UserState;
+import com.caloriebot.gateway.service.MessageService;
+import com.caloriebot.gateway.screen.StateMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 @Slf4j
 @Service
@@ -26,9 +26,6 @@ public class StartCommandHandlerImpl implements StartCommandHandler {
 
         log.info("Был получен user={} ", user.toString());
 
-        InlineKeyboardMarkup markup = new InlineKeyboardBuilder()
-                .button("Начать настройку", "start_configure").row().build();
-
-        return messageService.getMessage(BotMessage.WELCOME_MESSAGE.getText(), chatId, markup);
+        return messageService.getMessageByScreen(StateMap.getScreen(UserState.NEW), chatId);
     }
 }

@@ -1,4 +1,4 @@
-package com.caloriebot.gateway.service;
+package com.caloriebot.gateway.handler;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
