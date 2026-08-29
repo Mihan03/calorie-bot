@@ -72,8 +72,8 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
 
             SendMessage sendMessage = messageService.getMessage(BotMessage.EXCEPTION_MESSAGE.getText(), chatId, null);
 
-            switch (telegramData.messageType) {
-                case TelegramBotMessageType.MESSAGE:
+            switch (telegramData.messageType()) {
+                case MESSAGE -> {
                     Message message = update.getMessage();
                     String text = message.getText();
                     log.info("Received update from chatId={}, text={}", chatId, text);
@@ -88,8 +88,8 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
                     } catch (RuntimeException e) {
                         log.error(e.getMessage(), e);
                     }
-                    break;
-                case TelegramBotMessageType.CALLBACK:
+                }
+                case CALLBACK -> {
                     String callbackQuery = update.getCallbackQuery().getData();
 
                     sendAnswerCallbackQuery(update.getCallbackQuery().getId());
@@ -104,9 +104,7 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
                     } catch (RuntimeException e) {
                         log.error(e.getMessage(), e);
                     }
-                    break;
-                default:
-                    break;
+                }
             }
 
             telegramClient.execute(sendMessage);
@@ -146,6 +144,6 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
     private record BaseTelegramData(
         Long chatId,
         Long tgId,
-        Enum<TelegramBotMessageType> messageType
+        TelegramBotMessageType  messageType
     ) {}
 }

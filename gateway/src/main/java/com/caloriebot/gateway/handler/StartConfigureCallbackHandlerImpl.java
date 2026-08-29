@@ -32,9 +32,9 @@ public class StartConfigureCallbackHandlerImpl implements StartConfigureCallback
     }
 
     private SendMessage getSendMessage(Long chatId, boolean applied, String userState) {
-        if (!applied) {
-            Screen screen = StateMap.getScreen(UserState.valueOf(userState));
+        Screen screen = StateMap.getScreen(UserState.valueOf(userState));
 
+        if (!applied) {
             String prefix = screen.conflictPrefix()
                     .getText()
                     .formatted(screen.message().getShortName());
@@ -42,6 +42,6 @@ public class StartConfigureCallbackHandlerImpl implements StartConfigureCallback
             return messageService.getMessageByScreen(screen, chatId, prefix);
         }
 
-        return messageService.getMessageByScreen(StateMap.getScreen(UserState.WAITING_WEIGHT), chatId);
+        return messageService.getMessageByScreen(screen, chatId);
     }
 }
