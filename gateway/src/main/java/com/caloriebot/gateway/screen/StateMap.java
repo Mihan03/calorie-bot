@@ -1,0 +1,30 @@
+package com.caloriebot.gateway.screen;
+
+import com.caloriebot.gateway.UserState;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Карта состояний бота, см. Readme 15.12
+ */
+public final class StateMap {
+    private static final Map<UserState, Screen> STATES_MAP = Map.of(
+            UserState.NEW, new Screen(
+                    BotMessage.WELCOME_MESSAGE,
+                    BotMessage.NO_PREFIX,
+                    List.of(BotKeyboard.ONB_START)),
+            UserState.WAITING_WEIGHT, new Screen(
+                    BotMessage.WAITING_WEIGHT,
+                    BotMessage.CURRENT_STEP,
+                    List.of(BotKeyboard.ONB_RESTART)),
+            UserState.WAITING_HEIGHT, new Screen(
+                    BotMessage.WAITING_HEIGHT,
+                    BotMessage.CURRENT_STEP,
+                    List.of(BotKeyboard.ONB_RESTART))
+    );
+
+    public static Screen getScreen(UserState userState) {
+        return STATES_MAP.get(userState);
+    }
+}
