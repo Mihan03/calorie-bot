@@ -136,15 +136,15 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
     }
 
     private void sendAnswerCallbackQuery(String callbackId) {
-         try {
-             telegramClient.execute(
-                     AnswerCallbackQuery.builder()
-                             .callbackQueryId(callbackId)
-                             .build()
-             );
-         } catch (TelegramApiException e) {
+        try {
+            telegramClient.execute(
+                    AnswerCallbackQuery.builder()
+                            .callbackQueryId(callbackId)
+                            .build()
+            );
+        } catch (TelegramApiException e) {
             log.error("Telegram API Exception", e);
-         }
+        }
     }
 
     private record BaseTelegramData(
