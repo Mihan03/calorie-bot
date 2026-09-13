@@ -100,6 +100,8 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
                             sendMessage = startConfigureCallbackHandler.processStartConfigureHandler(tgId, chatId);
                         } else if (BotKeyboard.ONB_RESTART.getCallback().equals(callbackQuery)) {
                             sendMessage = startConfigureCallbackHandler.processRestartHandler(tgId, chatId);
+                        } else {
+                            sendMessage = messageService.getMessage(BotMessage.OUTDATED_BUTTON.getText(), chatId, null);
                         }
                     } catch (RuntimeException e) {
                         log.error(e.getMessage(), e);
@@ -133,12 +135,16 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
         return Optional.empty();
     }
 
-    private void sendAnswerCallbackQuery(String callbackId) throws TelegramApiException {
-        telegramClient.execute(
-                AnswerCallbackQuery.builder()
-                        .callbackQueryId(callbackId)
-                        .build()
-        );
+    private void sendAnswerCallbackQuery(String callbackId) {
+         try {
+             telegramClient.execute(
+                     AnswerCallbackQuery.builder()
+                             .callbackQueryId(callbackId)
+                             .build()
+             );
+         } catch (TelegramApiException e) {
+            log.error("Telegram API Exception", e);
+         }
     }
 
     private record BaseTelegramData(

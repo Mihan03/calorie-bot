@@ -22,6 +22,7 @@ public enum BotMessage {
 
     CURRENT_STEP("Настройка уже идёт, вы на шаге «%s».%n%n", null),
     EXCEPTION_MESSAGE("Что-то пошло не то, повторите попытку попозже...", null),
+    OUTDATED_BUTTON("Эта кнопка устарела. Отправьте /start, чтобы продолжить.", null),
 
     /** Шапки нет: текст шага отправляется без пояснения. */
     NO_PREFIX("", null);

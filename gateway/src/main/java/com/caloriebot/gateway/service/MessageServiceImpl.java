@@ -20,7 +20,7 @@ public class MessageServiceImpl implements MessageService {
                 .replyMarkup(markup)
                 .build();
 
-        writeLog(textMessage, chatId);
+        writeLog(textMessage, chatId, "");
 
         return message;
     }
@@ -41,12 +41,12 @@ public class MessageServiceImpl implements MessageService {
                 .replyMarkup(markup)
                 .build();
 
-        writeLog(screen.message().getText(), chatId);
+        writeLog(screen.message().getText(), chatId, prefix);
 
         return message;
     }
 
-    private void writeLog(String text, Long chatId) {
-        log.info("Сформировано сообщение с текстом ={} в chatId={} ", text, chatId);
+    private void writeLog(String text, Long chatId, String prefix) {
+        log.info("Сформировано сообщение с текстом ={}, префиксом ={}, в chatId={} ", text, prefix, chatId);
     }
 }
