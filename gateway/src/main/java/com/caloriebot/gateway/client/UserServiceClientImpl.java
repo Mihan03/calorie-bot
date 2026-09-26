@@ -35,6 +35,7 @@ public class UserServiceClientImpl implements UserServiceClient {
         return restClient.post()
                 .uri("/users/by-telegram/{tgId}/onboarding/restart", tgId)
                 .retrieve()
+                .onStatus(status -> status == HttpStatus.CONFLICT, (_, _) -> { })
                 .body(RestartResponseDto.class);
     }
 }

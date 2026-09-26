@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.boot.restclient.test.autoconfigure.RestClientTest;
@@ -18,8 +19,8 @@ import org.springframework.boot.restclient.test.autoconfigure.RestClientTest;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @RestClientTest(UserServiceClientImpl.class)
@@ -42,6 +43,10 @@ class UserServiceClientTest {
 
         server.expect(requestTo(baseUrl + "/users/processing-start"))
                 .andExpect(method(HttpMethod.POST))
+                .andExpect(content().json(
+                    """
+                      {"tgId": %d}
+                    """.formatted(TG_ID)))
                 .andRespond(withSuccess(
                         """
                             {
@@ -69,7 +74,7 @@ class UserServiceClientTest {
                         """
                           {
                             "userState": "%s",
-                            "applied": "%s"
+                            "applied": %s
                           }
                         """.formatted(UserState.WAITING_WEIGHT.toString(), true),
                         MediaType.APPLICATION_JSON
@@ -88,14 +93,15 @@ class UserServiceClientTest {
     void startConfigureWhenResponseNotApplied() {
         server.expect(requestTo(baseUrl + "/users/by-telegram/" + TG_ID + "/onboarding/start-configure"))
                 .andExpect(method(HttpMethod.POST))
-                .andRespond(withSuccess(
-                        """
-                          {
-                            "userState": "%s",
-                            "applied": "%s"
-                          }
-                        """.formatted(UserState.WAITING_HEIGHT.toString(), false),
-                        MediaType.APPLICATION_JSON
+                .andRespond(withStatus(HttpStatus.CONFLICT)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(
+                                """
+                                  {
+                                    "userState": "%s",
+                                    "applied": %s
+                                  }
+                                """.formatted(UserState.WAITING_HEIGHT.toString(), false)
                 ));
 
         StartConfigureResponseDto responseDto = userServiceClient.processingStateStartConfigure(TG_ID);
@@ -115,7 +121,7 @@ class UserServiceClientTest {
                         """
                           {
                             "userState": "%s",
-                            "applied": "%s"
+                            "applied": %s
                           }
                         """.formatted(UserState.WAITING_WEIGHT.toString(), true),
                         MediaType.APPLICATION_JSON
@@ -134,14 +140,15 @@ class UserServiceClientTest {
     void restartOnboardingWhenResponseNotApplied() {
         server.expect(requestTo(baseUrl + "/users/by-telegram/" + TG_ID + "/onboarding/restart"))
                 .andExpect(method(HttpMethod.POST))
-                .andRespond(withSuccess(
+                .andRespond(withStatus(HttpStatus.CONFLICT)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(
                         """
                           {
                             "userState": "%s",
-                            "applied": "%s"
+                            "applied": %s
                           }
-                        """.formatted(UserState.WAITING_HEIGHT.toString(), false),
-                        MediaType.APPLICATION_JSON
+                        """.formatted(UserState.WAITING_HEIGHT.toString(), false)
                 ));
 
         RestartResponseDto responseDto = userServiceClient.restartOnboarding(TG_ID);
