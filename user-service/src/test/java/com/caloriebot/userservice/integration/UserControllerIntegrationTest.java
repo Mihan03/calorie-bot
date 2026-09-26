@@ -54,8 +54,7 @@ public class UserControllerIntegrationTest {
                 .value(response -> {
                     assertThat(response).isNotNull();
                     assertThat(response.userId()).isNotNull();
-                    assertThat(response.userState())
-                            .isEqualTo(UserState.NEW.name());
+                    assertThat(response.userState()).isEqualTo(UserState.NEW.name());
                 });
     }
 
@@ -71,7 +70,7 @@ public class UserControllerIntegrationTest {
                 .expectBody(StartConfigureResponseDto.class)
                 .value(response -> {
                     assertThat(response).isNotNull();
-                    assertThat(response.userState()).isEqualTo(UserState.WAITING_WEIGHT.name());
+                    assertThat(response.userState()).isEqualTo(UserState.WAITING_WEIGHT);
                     assertThat(response.applied()).isTrue();
                 });
     }
@@ -88,7 +87,7 @@ public class UserControllerIntegrationTest {
                 .expectBody(StartConfigureResponseDto.class)
                 .value(response -> {
                     assertThat(response).isNotNull();
-                    assertThat(response.userState()).isEqualTo(UserState.WAITING_HEIGHT.name());
+                    assertThat(response.userState()).isEqualTo(UserState.WAITING_HEIGHT);
                     assertThat(response.applied()).isFalse();
                 });
     }
@@ -128,7 +127,7 @@ public class UserControllerIntegrationTest {
                 .expectBody(RestartResponseDto.class)
                 .value(response -> {
                     assertThat(response).isNotNull();
-                    assertThat(response.userState()).isEqualTo(UserState.WAITING_WEIGHT.name());
+                    assertThat(response.userState()).isEqualTo(UserState.WAITING_WEIGHT);
                     assertThat(response.applied()).isTrue();
                 });
     }
@@ -146,7 +145,7 @@ public class UserControllerIntegrationTest {
                 .expectBody(RestartResponseDto.class)
                 .value(response -> {
                     assertThat(response).isNotNull();
-                    assertThat(response.userState()).isEqualTo(UserState.NEW.name());
+                    assertThat(response.userState()).isEqualTo(UserState.NEW);
                     assertThat(response.applied()).isFalse();
                 });
     }
