@@ -11,8 +11,11 @@ import org.springframework.web.client.RestClient;
 public class RestClientConfig {
 
     @Bean
-    public RestClient userServiceRestClient(@Value("${services.user-service.url}") String baseUrl) {
-        return RestClient.builder()
+    public RestClient userServiceRestClient(
+            RestClient.Builder builder,
+            @Value("${services.user-service.url}") String baseUrl
+    ) {
+        return builder
                 .baseUrl(baseUrl)
                 .requestInterceptor(new CorrelationIdInterceptor())
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
