@@ -10,22 +10,15 @@ import com.caloriebot.userservice.model.entity.UserStateEntity;
 import com.caloriebot.userservice.model.enums.UserState;
 import com.caloriebot.userservice.repository.UserRepository;
 import com.caloriebot.userservice.service.UserService;
-import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-@Testcontainers
 @SpringBootTest
-public class UserServiceIntegrationTest {
+public class UserServiceIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     UserService userService;
@@ -33,23 +26,9 @@ public class UserServiceIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private EntityManager entityManager;
-
-    private static final Long TG_ID = 1L;
     private static final Long UNKNOWN_TG_ID = 2L;
 
-    @Container
-    @ServiceConnection
-    private static final PostgreSQLContainer POSTGRES = new PostgreSQLContainer("postgres:18-alpine3.24");
-
     @Test
-    void contextLoads() {
-        assertThat(POSTGRES.isRunning()).isTrue();
-    }
-
-    @Test
-    @Transactional
     void shouldCreateAndReturnUserWhenUserDoesNotExist() {
         UserDtoRequest request = new UserDtoRequest(TG_ID);
 
@@ -69,7 +48,6 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    @Transactional
     void shouldReturnExistingUserWithoutChangingState() {
         UserDtoRequest request = new UserDtoRequest(TG_ID);
 
@@ -92,7 +70,6 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    @Transactional
     void shouldChangeStateWhenUserStateIsNew() {
         UserEntity existingUser = new UserEntity();
         existingUser.setTgId(TG_ID);
@@ -110,8 +87,6 @@ public class UserServiceIntegrationTest {
         assertThat(response.userState()).isEqualTo(UserState.WAITING_WEIGHT);
         assertThat(response.applied()).isTrue();
 
-        entityManager.clear();
-
         UserEntity actualUser = userRepository.findByTgId(TG_ID)
                 .orElseThrow();
 
@@ -120,7 +95,6 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    @Transactional
     void shouldNotChangeStateWhenUserStateDoesNotNew() {
         UserEntity existingUser = new UserEntity();
         existingUser.setTgId(TG_ID);
@@ -137,8 +111,6 @@ public class UserServiceIntegrationTest {
         assertThat(response.userState()).isEqualTo(UserState.WAITING_HEIGHT);
         assertThat(response.applied()).isFalse();
 
-        entityManager.clear();
-
         UserEntity actualUser = userRepository.findByTgId(TG_ID)
                 .orElseThrow();
 
@@ -147,7 +119,6 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    @Transactional
     void shouldThrowNotFoundWhenStartingConfigureForUnknownUser() {
         assertThatThrownBy(
                 () -> userService.processingStateStartConfigure(UNKNOWN_TG_ID)
@@ -155,7 +126,6 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    @Transactional
     void shouldRestartOnboardingFromWaitingHeight() {
         UserEntity existingUser = new UserEntity();
         existingUser.setTgId(TG_ID);
@@ -172,8 +142,6 @@ public class UserServiceIntegrationTest {
         assertThat(restartResponseDto.userState()).isEqualTo(UserState.WAITING_WEIGHT);
         assertThat(restartResponseDto.applied()).isTrue();
 
-        entityManager.clear();
-
         UserEntity actualUser = userRepository.findByTgId(TG_ID)
                 .orElseThrow();
 
@@ -182,7 +150,6 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    @Transactional
     void shouldNotRestartOnboardingFromNew() {
         UserEntity existingUser = new UserEntity();
         existingUser.setTgId(TG_ID);
@@ -199,8 +166,6 @@ public class UserServiceIntegrationTest {
         assertThat(restartResponseDto.userState()).isEqualTo(UserState.NEW);
         assertThat(restartResponseDto.applied()).isFalse();
 
-        entityManager.clear();
-
         UserEntity actualUser = userRepository.findByTgId(TG_ID)
                 .orElseThrow();
 
@@ -209,7 +174,6 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    @Transactional
     void shouldThrowNotFoundWhenRestartingUnknownUserOnboarding() {
         assertThatThrownBy(
                 () -> userService.restartOnboarding(UNKNOWN_TG_ID)

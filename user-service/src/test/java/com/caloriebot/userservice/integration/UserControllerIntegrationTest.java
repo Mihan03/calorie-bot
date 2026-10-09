@@ -9,23 +9,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.client.RestTestClient;
-import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureRestTestClient
-@Testcontainers
-public class UserControllerIntegrationTest {
+public class UserControllerIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private RestTestClient restTestClient;
@@ -34,14 +28,7 @@ public class UserControllerIntegrationTest {
     private UserRepository userRepository;
 
     private static final String BASE_URL = "/api/v1/users";
-    private static final Long TG_ID = 1L;
 
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer postgres =
-            new PostgreSQLContainer("postgres:18-alpine3.24");
-
-    @Transactional
     @Test
     void shouldReturnOkWhenProcessingStart() {
         restTestClient.post()
@@ -58,7 +45,6 @@ public class UserControllerIntegrationTest {
                 });
     }
 
-    @Transactional
     @Test
     void shouldReturnOkWhenStartingConfigure() {
         createTestUser(UserState.NEW);
@@ -75,7 +61,6 @@ public class UserControllerIntegrationTest {
                 });
     }
 
-    @Transactional
     @Test
     void shouldReturnConflictWhenStartingConfigure() {
         createTestUser(UserState.WAITING_HEIGHT);
@@ -92,7 +77,6 @@ public class UserControllerIntegrationTest {
                 });
     }
 
-    @Transactional
     @Test
     void shouldReturnNotFoundWhenUserNotFound() {
         restTestClient.post()
@@ -114,7 +98,6 @@ public class UserControllerIntegrationTest {
                 });
     }
 
-    @Transactional
     @Test
     void shouldReturnOkWhenRestartingConfigure() {
         createTestUser(UserState.WAITING_HEIGHT);
@@ -132,7 +115,6 @@ public class UserControllerIntegrationTest {
                 });
     }
 
-    @Transactional
     @Test
     void shouldReturnConflictWhenRestartingConfigure() {
         createTestUser(UserState.NEW);
