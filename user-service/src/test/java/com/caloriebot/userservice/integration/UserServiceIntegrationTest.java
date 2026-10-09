@@ -7,7 +7,6 @@ import com.caloriebot.userservice.dto.UserDtoResponse;
 import com.caloriebot.userservice.exception.NotFoundException;
 import com.caloriebot.userservice.model.entity.UserEntity;
 import com.caloriebot.userservice.model.enums.UserState;
-import com.caloriebot.userservice.repository.UserRepository;
 import com.caloriebot.userservice.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,9 +22,6 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     UserService userService;
-
-    @Autowired
-    private UserRepository userRepository;
 
     private static final Long UNKNOWN_TG_ID = 2L;
 

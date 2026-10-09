@@ -19,7 +19,7 @@ public abstract class BaseIntegrationTest {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private UserRepository userRepository;
+    protected UserRepository userRepository;
 
     @ServiceConnection
     protected static final PostgreSQLContainer POSTGRES_SQL_CONTAINER = new PostgreSQLContainer("postgres:18-alpine3.24");
