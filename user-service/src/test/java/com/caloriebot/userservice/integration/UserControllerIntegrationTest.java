@@ -1,10 +1,7 @@
 package com.caloriebot.userservice.integration;
 
 import com.caloriebot.userservice.dto.*;
-import com.caloriebot.userservice.model.entity.UserEntity;
-import com.caloriebot.userservice.model.entity.UserStateEntity;
 import com.caloriebot.userservice.model.enums.UserState;
-import com.caloriebot.userservice.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
@@ -23,9 +20,6 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private RestTestClient restTestClient;
-
-    @Autowired
-    private UserRepository userRepository;
 
     private static final String BASE_URL = "/api/v1/users";
 
@@ -130,18 +124,5 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
                     assertThat(response.userState()).isEqualTo(UserState.NEW);
                     assertThat(response.applied()).isFalse();
                 });
-    }
-
-    protected void createTestUser(UserState state) {
-        UserEntity user = new UserEntity();
-        user.setTgId(TG_ID);
-
-        UserStateEntity userState = new UserStateEntity();
-        userState.setState(state);
-        userState.setUser(user);
-
-        user.setUserState(userState);
-
-        userRepository.save(user);
     }
 }

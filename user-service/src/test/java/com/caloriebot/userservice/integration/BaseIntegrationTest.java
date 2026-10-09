@@ -1,5 +1,9 @@
 package com.caloriebot.userservice.integration;
 
+import com.caloriebot.userservice.model.entity.UserEntity;
+import com.caloriebot.userservice.model.entity.UserStateEntity;
+import com.caloriebot.userservice.model.enums.UserState;
+import com.caloriebot.userservice.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -13,6 +17,9 @@ public abstract class BaseIntegrationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @ServiceConnection
     protected static final PostgreSQLContainer POSTGRES_SQL_CONTAINER = new PostgreSQLContainer("postgres:18-alpine3.24");
@@ -37,5 +44,18 @@ public abstract class BaseIntegrationTest {
 
         String truncateSql = "TRUNCATE TABLE " + tablesString + " CASCADE";
         jdbcTemplate.execute(truncateSql);
+    }
+
+    protected UserEntity createTestUser(UserState state) {
+        UserEntity user = new UserEntity();
+        user.setTgId(TG_ID);
+
+        UserStateEntity userState = new UserStateEntity();
+        userState.setState(state);
+        userState.setUser(user);
+
+        user.setUserState(userState);
+
+        return userRepository.save(user);
     }
 }

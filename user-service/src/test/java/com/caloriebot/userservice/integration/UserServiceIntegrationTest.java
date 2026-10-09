@@ -6,11 +6,12 @@ import com.caloriebot.userservice.dto.UserDtoRequest;
 import com.caloriebot.userservice.dto.UserDtoResponse;
 import com.caloriebot.userservice.exception.NotFoundException;
 import com.caloriebot.userservice.model.entity.UserEntity;
-import com.caloriebot.userservice.model.entity.UserStateEntity;
 import com.caloriebot.userservice.model.enums.UserState;
 import com.caloriebot.userservice.repository.UserRepository;
 import com.caloriebot.userservice.service.UserService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -51,16 +52,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
     void shouldReturnExistingUserWithoutChangingState() {
         UserDtoRequest request = new UserDtoRequest(TG_ID);
 
-        UserEntity existingUser = new UserEntity();
-        existingUser.setTgId(TG_ID);
-
-        UserStateEntity userStateEntity = new UserStateEntity();
-        userStateEntity.setState(UserState.WAITING_WEIGHT);
-        userStateEntity.setUser(existingUser);
-
-        existingUser.setUserState(userStateEntity);
-
-        existingUser = userRepository.save(existingUser);
+        UserEntity existingUser = createTestUser(UserState.WAITING_WEIGHT);
 
         UserDtoResponse response = userService.processingStart(request);
 
@@ -71,16 +63,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldChangeStateWhenUserStateIsNew() {
-        UserEntity existingUser = new UserEntity();
-        existingUser.setTgId(TG_ID);
-
-        UserStateEntity userStateEntity = new UserStateEntity();
-        userStateEntity.setState(UserState.NEW);
-        userStateEntity.setUser(existingUser);
-
-        existingUser.setUserState(userStateEntity);
-
-        userRepository.save(existingUser);
+        createTestUser(UserState.NEW);
 
         StartConfigureResponseDto response = userService.processingStateStartConfigure(TG_ID);
 
@@ -96,16 +79,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldNotChangeStateWhenUserStateDoesNotNew() {
-        UserEntity existingUser = new UserEntity();
-        existingUser.setTgId(TG_ID);
-
-        UserStateEntity userStateEntity = new UserStateEntity();
-        userStateEntity.setState(UserState.WAITING_HEIGHT);
-        userStateEntity.setUser(existingUser);
-
-        existingUser.setUserState(userStateEntity);
-
-        userRepository.save(existingUser);
+        createTestUser(UserState.WAITING_HEIGHT);
 
         StartConfigureResponseDto response = userService.processingStateStartConfigure(TG_ID);
         assertThat(response.userState()).isEqualTo(UserState.WAITING_HEIGHT);
@@ -125,18 +99,10 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
         ).isInstanceOf(NotFoundException.class);
     }
 
-    @Test
-    void shouldRestartOnboardingFromWaitingHeight() {
-        UserEntity existingUser = new UserEntity();
-        existingUser.setTgId(TG_ID);
-
-        UserStateEntity userStateEntity = new UserStateEntity();
-        userStateEntity.setState(UserState.WAITING_HEIGHT);
-        userStateEntity.setUser(existingUser);
-
-        existingUser.setUserState(userStateEntity);
-
-        userRepository.save(existingUser);
+    @ParameterizedTest
+    @EnumSource(names = {"WAITING_WEIGHT", "WAITING_HEIGHT"})
+    void shouldRestartOnboardingFromAnyOnboardingState(UserState initial) {
+        createTestUser(initial);
 
         RestartResponseDto restartResponseDto = userService.restartOnboarding(TG_ID);
         assertThat(restartResponseDto.userState()).isEqualTo(UserState.WAITING_WEIGHT);
@@ -151,16 +117,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldNotRestartOnboardingFromNew() {
-        UserEntity existingUser = new UserEntity();
-        existingUser.setTgId(TG_ID);
-
-        UserStateEntity userStateEntity = new UserStateEntity();
-        userStateEntity.setState(UserState.NEW);
-        userStateEntity.setUser(existingUser);
-
-        existingUser.setUserState(userStateEntity);
-
-        userRepository.save(existingUser);
+        createTestUser(UserState.NEW);
 
         RestartResponseDto restartResponseDto = userService.restartOnboarding(TG_ID);
         assertThat(restartResponseDto.userState()).isEqualTo(UserState.NEW);
