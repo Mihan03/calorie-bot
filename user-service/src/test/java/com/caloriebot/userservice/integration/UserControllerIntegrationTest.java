@@ -88,7 +88,6 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
                     assertThat(error.code())
                             .isEqualTo(ErrorCode.USER_NOT_FOUND.name());
                     assertThat(error.message()).isNotBlank();
-                    assertThat(error.userMessage()).isNotBlank();
                 });
     }
 

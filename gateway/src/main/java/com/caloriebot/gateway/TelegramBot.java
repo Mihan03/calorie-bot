@@ -1,6 +1,7 @@
 package com.caloriebot.gateway;
 
 import com.caloriebot.common.LoggingConstants;
+import com.caloriebot.gateway.client.exception.UserNotRegisteredException;
 import com.caloriebot.gateway.screen.BotKeyboard;
 import com.caloriebot.gateway.screen.BotMessage;
 import com.caloriebot.gateway.service.MessageService;
@@ -85,6 +86,9 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
                             sendMessage = messageService.getMessage("Скоро...", chatId, null);
                         }
 
+                    } catch (UserNotRegisteredException e) {
+                        log.info(e.getMessage(), e);
+                        sendMessage = messageService.getMessage(BotMessage.USER_NOT_FOUND.getText(), chatId, null);
                     } catch (RuntimeException e) {
                         log.error(e.getMessage(), e);
                     }
@@ -103,6 +107,9 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
                         } else {
                             sendMessage = messageService.getMessage(BotMessage.OUTDATED_BUTTON.getText(), chatId, null);
                         }
+                    } catch (UserNotRegisteredException e) {
+                        log.info(e.getMessage(), e);
+                        sendMessage = messageService.getMessage(BotMessage.USER_NOT_FOUND.getText(), chatId, null);
                     } catch (RuntimeException e) {
                         log.error(e.getMessage(), e);
                     }

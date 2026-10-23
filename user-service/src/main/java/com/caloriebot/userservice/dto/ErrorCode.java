@@ -6,8 +6,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
-    USER_NOT_FOUND("Сначала зарегистрируйтесь с помощью команды /start"),
-    INTERNAL_ERROR("Внутренняя ошибка сервиса. Попробуйте позже.");
-
-    private final String userMessage;
+    USER_NOT_FOUND,
+    INTERNAL_ERROR
 }

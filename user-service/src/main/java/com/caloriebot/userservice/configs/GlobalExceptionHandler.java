@@ -24,7 +24,6 @@ public class GlobalExceptionHandler {
         ApiError error = new ApiError(
                 ex.getErrorCode().name(),
                 ex.getMessage(),
-                ex.getErrorCode().getUserMessage(),
                 null
         );
 
@@ -39,7 +38,6 @@ public class GlobalExceptionHandler {
         ApiError error = new ApiError(
                 ErrorCode.INTERNAL_ERROR.name(),
                 "Internal server error",
-                ErrorCode.INTERNAL_ERROR.getUserMessage(),
                 null
         );
 
