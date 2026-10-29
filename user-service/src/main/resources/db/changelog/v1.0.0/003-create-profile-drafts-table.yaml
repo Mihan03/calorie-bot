@@ -1,0 +1,53 @@
+databaseChangeLog:
+  - changeSet:
+      id: "003-create-profile-drafts-table"
+      author: "mihan03"
+      comment: "Создание промежуточной таблицы данных пользователя"
+      changes:
+        - createTable:
+            tableName: profile_drafts
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: weight
+                  type: NUMERIC(4,1)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: height
+                  type: INTEGER
+                  constraints:
+                    nullable: true
+              - column:
+                  name: gender
+                  type: VARCHAR(64)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: age
+                  type: INTEGER
+                  constraints:
+                    nullable: true
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    unique: true
+                    nullable: false
+                    foreignKeyName: fk_profile_drafts_users
+                    references: users(id)
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
