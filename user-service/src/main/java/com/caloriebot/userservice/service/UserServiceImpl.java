@@ -4,7 +4,6 @@ import com.caloriebot.userservice.dto.*;
 import com.caloriebot.userservice.exception.NotFoundException;
 import com.caloriebot.userservice.mapper.UserMapper;
 import com.caloriebot.userservice.model.entity.UserEntity;
-import com.caloriebot.userservice.model.entity.UserStateEntity;
 import com.caloriebot.userservice.model.enums.UserState;
 import com.caloriebot.userservice.repository.UserRepository;
 import com.caloriebot.userservice.repository.UserStateRepository;
@@ -12,7 +11,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -27,63 +25,18 @@ public class UserServiceImpl implements UserService {
         return userMapper.toUserDtoResponse(getUserEntity(tgId));
     }
 
-    @Override
-    @Transactional
-    public UserDtoResponse processingStart(UserDtoRequest userDtoRequest) {
-        UserEntity userEntity = userRepository.findByTgId(userDtoRequest.tgId())
-                .orElse(null);
-
-        if (userEntity == null) {
-            userEntity = new UserEntity();
-            UserStateEntity userStateEntity = new UserStateEntity();
-            userStateEntity.setState(UserState.NEW);
-            userStateEntity.setUser(userEntity);
-
-            userEntity.setTgId(userDtoRequest.tgId());
-            userEntity.setUserState(userStateEntity);
-
-            userRepository.save(userEntity);
-
-            log.info("Был зарегистрирован пользователь с tgId={}, присвоено состояние={}",
-                    userDtoRequest.tgId(), UserState.NEW.name());
-        }
-
-        log.info("Получен пользователь={}", userEntity);
-
-        return userMapper.toUserDtoResponse(userEntity);
-    }
-
-    @Transactional
-    public StartConfigureResponseDto processingStateStartConfigure(Long tgId) {
-        int rowUpdated = userStateRepository.changeState(tgId, UserState.NEW, UserState.WAITING_WEIGHT);
+    public StartConfigureResponseDto changeState(Long tgId, UserState fromState, UserState toState) {
+        int rowUpdated = userStateRepository.changeState(tgId, fromState, toState);
         if (rowUpdated != 1) {
             UserEntity userEntity = getUserEntity(tgId);
-            log.info("Требуемое исходное состояние - {}, текущее - {}", UserState.NEW.name(), userEntity.getUserState().getState());
+            log.info("Source state is needed - {}, current state - {}", fromState, userEntity.getUserState().getState());
             return new StartConfigureResponseDto(userEntity.getUserState().getState(), false);
         }
 
-        log.info("User state was changed from {} to {}", UserState.NEW.name(), UserState.WAITING_WEIGHT.name());
-        return new StartConfigureResponseDto(UserState.WAITING_WEIGHT, true);
+        return new StartConfigureResponseDto(toState, true);
     }
 
-    @Transactional
-    public RestartResponseDto restartOnboarding(Long tgId) {
-        int rowsUpdated = userStateRepository.restartOnboarding(
-                tgId,
-                UserState.getOnboardingStates(),
-                UserState.WAITING_WEIGHT
-        );
-
-        if (rowsUpdated != 1) {
-            UserEntity user = getUserEntity(tgId);
-            log.info("User {} exists, but its onboarding state was not updated", user);
-            return new RestartResponseDto(user.getUserState().getState(), false);
-        }
-
-        return new RestartResponseDto(UserState.WAITING_WEIGHT, true);
-    }
-
-    private UserEntity getUserEntity(Long tgId) {
+    public UserEntity getUserEntity(Long tgId) {
         return userRepository.findByTgId(tgId).orElseThrow(() -> new NotFoundException(
                 ErrorCode.USER_NOT_FOUND,
                 "User with tgId=%d was not found".formatted(tgId)

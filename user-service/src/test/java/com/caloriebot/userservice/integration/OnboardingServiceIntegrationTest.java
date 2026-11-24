@@ -7,7 +7,7 @@ import com.caloriebot.userservice.dto.UserDtoResponse;
 import com.caloriebot.userservice.exception.NotFoundException;
 import com.caloriebot.userservice.model.entity.UserEntity;
 import com.caloriebot.userservice.model.enums.UserState;
-import com.caloriebot.userservice.service.UserService;
+import com.caloriebot.userservice.service.OnboardingService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -18,10 +18,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @SpringBootTest
-public class UserServiceIntegrationTest extends BaseIntegrationTest {
+public class OnboardingServiceIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
-    UserService userService;
+    OnboardingService onboardingService;
 
     private static final Long UNKNOWN_TG_ID = 2L;
 
@@ -29,7 +29,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
     void shouldCreateAndReturnUserWhenUserDoesNotExist() {
         UserDtoRequest request = new UserDtoRequest(TG_ID);
 
-        UserDtoResponse response = userService.processingStart(request);
+        UserDtoResponse response = onboardingService.processingStart(request);
 
         assertThat(response).isNotNull();
         assertThat(response.userId()).isNotNull();
@@ -50,7 +50,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
 
         UserEntity existingUser = createTestUser(UserState.WAITING_WEIGHT);
 
-        UserDtoResponse response = userService.processingStart(request);
+        UserDtoResponse response = onboardingService.processingStart(request);
 
         assertThat(response.userId()).isEqualTo(existingUser.getId());
         assertThat(response.userState()).isEqualTo(UserState.WAITING_WEIGHT.name());
@@ -61,7 +61,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
     void shouldChangeStateWhenUserStateIsNew() {
         createTestUser(UserState.NEW);
 
-        StartConfigureResponseDto response = userService.processingStateStartConfigure(TG_ID);
+        StartConfigureResponseDto response = onboardingService.processingStateStartConfigure(TG_ID);
 
         assertThat(response.userState()).isEqualTo(UserState.WAITING_WEIGHT);
         assertThat(response.applied()).isTrue();
@@ -77,7 +77,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
     void shouldNotChangeStateWhenUserStateDoesNotNew() {
         createTestUser(UserState.WAITING_HEIGHT);
 
-        StartConfigureResponseDto response = userService.processingStateStartConfigure(TG_ID);
+        StartConfigureResponseDto response = onboardingService.processingStateStartConfigure(TG_ID);
         assertThat(response.userState()).isEqualTo(UserState.WAITING_HEIGHT);
         assertThat(response.applied()).isFalse();
 
@@ -91,7 +91,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldThrowNotFoundWhenStartingConfigureForUnknownUser() {
         assertThatThrownBy(
-                () -> userService.processingStateStartConfigure(UNKNOWN_TG_ID)
+                () -> onboardingService.processingStateStartConfigure(UNKNOWN_TG_ID)
         ).isInstanceOf(NotFoundException.class);
     }
 
@@ -100,7 +100,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
     void shouldRestartOnboardingFromAnyOnboardingState(UserState initial) {
         createTestUser(initial);
 
-        RestartResponseDto restartResponseDto = userService.restartOnboarding(TG_ID);
+        RestartResponseDto restartResponseDto = onboardingService.restartOnboarding(TG_ID);
         assertThat(restartResponseDto.userState()).isEqualTo(UserState.WAITING_WEIGHT);
         assertThat(restartResponseDto.applied()).isTrue();
 
@@ -115,7 +115,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
     void shouldNotRestartOnboardingFromNew() {
         createTestUser(UserState.NEW);
 
-        RestartResponseDto restartResponseDto = userService.restartOnboarding(TG_ID);
+        RestartResponseDto restartResponseDto = onboardingService.restartOnboarding(TG_ID);
         assertThat(restartResponseDto.userState()).isEqualTo(UserState.NEW);
         assertThat(restartResponseDto.applied()).isFalse();
 
@@ -129,7 +129,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldThrowNotFoundWhenRestartingUnknownUserOnboarding() {
         assertThatThrownBy(
-                () -> userService.restartOnboarding(UNKNOWN_TG_ID)
+                () -> onboardingService.restartOnboarding(UNKNOWN_TG_ID)
         ).isInstanceOf(NotFoundException.class);
     }
 }
