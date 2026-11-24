@@ -1,7 +1,9 @@
 package com.caloriebot.userservice.integration;
 
+import com.caloriebot.userservice.model.entity.ProfileDraftEntity;
 import com.caloriebot.userservice.model.entity.UserEntity;
 import com.caloriebot.userservice.model.entity.UserStateEntity;
+import com.caloriebot.userservice.model.enums.Gender;
 import com.caloriebot.userservice.model.enums.UserState;
 import com.caloriebot.userservice.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +12,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public abstract class BaseIntegrationTest {
@@ -47,6 +50,25 @@ public abstract class BaseIntegrationTest {
     }
 
     protected UserEntity createTestUser(UserState state) {
+        return userRepository.save(buildTestUser(state));
+    }
+
+    protected UserEntity createTestUserWithDraft(UserState state) {
+        UserEntity user = buildTestUser(state);
+
+        ProfileDraftEntity profileDraft = new ProfileDraftEntity();
+        profileDraft.setUser(user);
+        profileDraft.setAge(42);
+        profileDraft.setGender(Gender.MAN);
+        profileDraft.setHeight(165);
+        profileDraft.setWeight(BigDecimal.valueOf(68));
+
+        user.setProfileDraft(profileDraft);
+
+        return userRepository.save(user);
+    }
+
+    private UserEntity buildTestUser(UserState state) {
         UserEntity user = new UserEntity();
         user.setTgId(TG_ID);
 
@@ -55,7 +77,6 @@ public abstract class BaseIntegrationTest {
         userState.setUser(user);
 
         user.setUserState(userState);
-
-        return userRepository.save(user);
+        return user;
     }
 }

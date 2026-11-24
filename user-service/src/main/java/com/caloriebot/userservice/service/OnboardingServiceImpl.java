@@ -52,7 +52,7 @@ public class OnboardingServiceImpl implements OnboardingService {
 
         log.info("Получен пользователь={}", userEntity);
         ProfileDraftEntity profileDraftEntity = new ProfileDraftEntity();
-        profileDraftEntity.setUser(userEntity);
+
         profileDraftService.updateProfileDraft(profileDraftEntity, userEntity.getTgId());
 
         return userMapper.toUserDtoResponse(userEntity);
@@ -83,11 +83,17 @@ public class OnboardingServiceImpl implements OnboardingService {
                 UserState.getOnboardingStates(),
                 UserState.WAITING_WEIGHT
         );
+        UserEntity user = userService.getUserEntity(tgId);
 
         if (rowsUpdated != 1) {
-            UserEntity user = userService.getUserEntity(tgId);
             log.info("User {} exists, but its onboarding state was not updated", user);
             return new RestartResponseDto(user.getUserState().getState(), false);
+        }
+
+        ProfileDraftEntity profileDraftEntity = user.getProfileDraft();
+        if (profileDraftEntity != null) {
+            profileDraftService.clearProfileDraft(profileDraftEntity);
+            log.info("Profiles's user was cleaned");
         }
 
         return new RestartResponseDto(UserState.WAITING_WEIGHT, true);

@@ -57,7 +57,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldReturnConflictWhenStartingConfigure() {
-        createTestUser(UserState.WAITING_HEIGHT);
+        createTestUserWithDraft(UserState.WAITING_HEIGHT);
 
         restTestClient.post()
                 .uri(BASE_URL + "/by-telegram/{tgId}/onboarding/start-configure", TG_ID)
@@ -93,7 +93,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldReturnOkWhenRestartingConfigure() {
-        createTestUser(UserState.WAITING_HEIGHT);
+        createTestUserWithDraft(UserState.WAITING_HEIGHT);
 
         restTestClient.post()
                 .uri(BASE_URL + "/by-telegram/{tgId}/onboarding/restart", TG_ID)
@@ -110,7 +110,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldReturnConflictWhenRestartingConfigure() {
-        createTestUser(UserState.NEW);
+        createTestUserWithDraft(UserState.NEW);
 
         restTestClient.post()
                 .uri(BASE_URL + "/by-telegram/{tgId}/onboarding/restart", TG_ID)

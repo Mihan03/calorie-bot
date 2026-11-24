@@ -5,6 +5,7 @@ import com.caloriebot.userservice.dto.StartConfigureResponseDto;
 import com.caloriebot.userservice.dto.UserDtoRequest;
 import com.caloriebot.userservice.dto.UserDtoResponse;
 import com.caloriebot.userservice.exception.NotFoundException;
+import com.caloriebot.userservice.model.entity.ProfileDraftEntity;
 import com.caloriebot.userservice.model.entity.UserEntity;
 import com.caloriebot.userservice.model.enums.UserState;
 import com.caloriebot.userservice.service.OnboardingService;
@@ -41,6 +42,9 @@ public class OnboardingServiceIntegrationTest extends BaseIntegrationTest {
         assertThat(savedUser.getUserState()).isNotNull();
         assertThat(savedUser.getUserState().getState()).isEqualTo(UserState.NEW);
 
+        ProfileDraftEntity profileDraft = savedUser.getProfileDraft();
+        assertThat(profileDraft).hasAllNullFieldsOrPropertiesExcept("id", "user", "createdAt", "updatedAt");
+
         assertThat(userRepository.count()).isEqualTo(1);
     }
 
@@ -48,7 +52,7 @@ public class OnboardingServiceIntegrationTest extends BaseIntegrationTest {
     void shouldReturnExistingUserWithoutChangingState() {
         UserDtoRequest request = new UserDtoRequest(TG_ID);
 
-        UserEntity existingUser = createTestUser(UserState.WAITING_WEIGHT);
+        UserEntity existingUser = createTestUserWithDraft(UserState.WAITING_WEIGHT);
 
         UserDtoResponse response = onboardingService.processingStart(request);
 
@@ -71,11 +75,15 @@ public class OnboardingServiceIntegrationTest extends BaseIntegrationTest {
 
         assertThat(actualUser.getUserState().getState())
                 .isEqualTo(UserState.WAITING_WEIGHT);
+
+        ProfileDraftEntity profileDraft = actualUser.getProfileDraft();
+
+        assertThat(profileDraft).hasAllNullFieldsOrPropertiesExcept("id", "user", "createdAt", "updatedAt");
     }
 
     @Test
-    void shouldNotChangeStateWhenUserStateDoesNotNew() {
-        createTestUser(UserState.WAITING_HEIGHT);
+    void shouldNotChangeStateWhenUserStateIsNotNew() {
+        createTestUserWithDraft(UserState.WAITING_HEIGHT);
 
         StartConfigureResponseDto response = onboardingService.processingStateStartConfigure(TG_ID);
         assertThat(response.userState()).isEqualTo(UserState.WAITING_HEIGHT);
@@ -98,7 +106,7 @@ public class OnboardingServiceIntegrationTest extends BaseIntegrationTest {
     @ParameterizedTest
     @EnumSource(names = {"WAITING_WEIGHT", "WAITING_HEIGHT"})
     void shouldRestartOnboardingFromAnyOnboardingState(UserState initial) {
-        createTestUser(initial);
+        createTestUserWithDraft(initial);
 
         RestartResponseDto restartResponseDto = onboardingService.restartOnboarding(TG_ID);
         assertThat(restartResponseDto.userState()).isEqualTo(UserState.WAITING_WEIGHT);
@@ -109,6 +117,9 @@ public class OnboardingServiceIntegrationTest extends BaseIntegrationTest {
 
         assertThat(actualUser.getUserState().getState())
                 .isEqualTo(UserState.WAITING_WEIGHT);
+
+        ProfileDraftEntity profileDraft = actualUser.getProfileDraft();
+        assertThat(profileDraft).hasAllNullFieldsOrPropertiesExcept("id", "user", "createdAt", "updatedAt");
     }
 
     @Test

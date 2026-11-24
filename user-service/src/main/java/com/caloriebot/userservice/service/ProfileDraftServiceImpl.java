@@ -19,9 +19,7 @@ public class ProfileDraftServiceImpl implements ProfileDraftService {
 
         ProfileDraftEntity profileDraftCurrently = getProfileDraft(user);
 
-        if (profileDraftToUpdate.getUser() != null) {
-            profileDraftCurrently.setUser(profileDraftToUpdate.getUser());
-        }
+        profileDraftCurrently.setUser(user);
 
         if (profileDraftToUpdate.getAge() != null) {
             profileDraftCurrently.setAge(profileDraftToUpdate.getAge());
@@ -45,5 +43,13 @@ public class ProfileDraftServiceImpl implements ProfileDraftService {
 
     public ProfileDraftEntity getProfileDraft(UserEntity user) {
         return profileDraftRepository.findByUser(user).orElse(new ProfileDraftEntity());
+    }
+
+    public ProfileDraftEntity clearProfileDraft(ProfileDraftEntity profileDraft) {
+        profileDraft.setAge(null);
+        profileDraft.setGender(null);
+        profileDraft.setWeight(null);
+        profileDraft.setHeight(null);
+        return profileDraftRepository.save(profileDraft);
     }
 }

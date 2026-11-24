@@ -25,6 +25,9 @@ public class UserEntity extends AuditableEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserStateEntity userState;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ProfileDraftEntity profileDraft;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
